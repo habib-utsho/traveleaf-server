@@ -63,6 +63,33 @@ const insertTraveler = async (
 
     await session.commitTransaction()
     await session.endSession()
+
+    await sendEmail({
+      toEmail: payload?.email,
+      subject: 'Your account is created!',
+      text: `Hello, ${payload?.name} Welcome to our platform! Your account has been successfully created. You can log in using the following credentials:
+    
+      Email: ${payload?.email}
+      Password: ${payload.password}
+    
+      Please keep this information secure. You can log in here: ${process.env.CLIENT_URL}/signin`,
+
+      html: `
+        <p>Welcome to our platform!</p>
+        <p>Your account has been successfully created.</p>
+    
+        <p>You can log in using the following credentials:</p>
+        
+        <p><strong>Email:</strong> ${payload?.email}</p>
+        <p><strong>Password:</strong> ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}</p>
+    
+        <div>
+          <a href="${process.env.CLIENT_URL}/signin" style="background-color: #00ABE4; margin: 5px 0; cursor: pointer; padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none; display: inline-block;">Log in</a>
+        </div>
+    
+      `,
+    })
+
     return traveler[0]
   } catch (err: any) {
     await session.abortTransaction()
@@ -132,7 +159,7 @@ const insertAdmin = async (file: any, payload: TAdmin & TUser) => {
     await sendEmail({
       toEmail: payload?.email,
       subject: 'Your admin account is created!',
-      text: `Welcome to our platform! Your admin account has been successfully created. You can log in using the following credentials:
+      text: `Hello, ${payload?.name} Welcome to our platform! Your admin account has been successfully created. You can log in using the following credentials:
     
       Email: ${payload?.email}
       Password: ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}
@@ -149,7 +176,7 @@ const insertAdmin = async (file: any, payload: TAdmin & TUser) => {
         <p><strong>Password:</strong> ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}</p>
     
         <div>
-          <a href="${process.env.CLIENT_URL}/signin" style="background-color: #05668D; margin: 5px 0; cursor: pointer; padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none; display: inline-block;">Log in</a>
+          <a href="${process.env.CLIENT_URL}/signin" style="background-color: #00ABE4; margin: 5px 0; cursor: pointer; padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none; display: inline-block;">Log in</a>
         </div>
     
         <p>Please keep this information secure and change your password after logging in.</p>

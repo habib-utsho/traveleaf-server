@@ -6,7 +6,11 @@ import bcrypt from 'bcrypt'
 const UserSchema = new Schema<TUser>(
   {
     email: { type: String, unique: true, trim: true, required: true },
-    password: { type: String, required: [true, 'Password is required'] },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      select: false,
+    },
     needsPasswordChange: { type: Boolean, default: false },
     role: {
       type: String,

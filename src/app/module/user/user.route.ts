@@ -7,7 +7,7 @@ import auth from '../../middleware/auth'
 import { USER_ROLE } from './user.constant'
 import { upload } from '../../utils/uploadImgToCloudinary'
 import { createAdminZodSchema } from '../admin/admin.validation'
-import { createTravelerZodSchema } from '../traveler/patient.validation'
+import { createTravelerZodSchema } from '../traveler/traveler.validation'
 
 const router = Router()
 

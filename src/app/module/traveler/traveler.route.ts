@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import auth from '../../middleware/auth'
 import { USER_ROLE } from '../user/user.constant'
-import { travelerController } from './patient.controller'
+import { travelerController } from './traveler.controller'
 
 const router = Router()
 
