@@ -1,0 +1,1 @@
+export const postSearchableField = ['title']
