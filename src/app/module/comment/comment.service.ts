@@ -20,6 +20,10 @@ const getAllComments = async (query: Record<string, unknown>) => {
     .sortQuery()
     .paginateQuery()
     .fieldFilteringQuery()
+    .populateQuery([
+      { path: 'post', select: '-createdAt -updatedAt -__v' },
+      { path: 'user', select: '-createdAt -updatedAt -__v' },
+    ])
 
   const result = await commentQuery?.queryModel
   const total = await Comment.countDocuments(

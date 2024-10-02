@@ -5,7 +5,7 @@ const CommentSchema = new Schema<TComment>(
   {
     user: {
       type: Types.ObjectId,
-      ref: 'User',
+      ref: 'Traveler',
       required: [true, 'User is required'],
     },
     post: {
