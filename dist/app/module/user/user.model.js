@@ -17,7 +17,10 @@ const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const UserSchema = new mongoose_1.Schema({
     email: { type: String, unique: true, trim: true, required: true },
-    password: { type: String, required: [true, 'Password is required'] },
+    password: {
+        type: String,
+        required: [true, 'Password is required'],
+    },
     needsPasswordChange: { type: Boolean, default: false },
     role: {
         type: String,
@@ -25,7 +28,7 @@ const UserSchema = new mongoose_1.Schema({
         required: true,
     },
     status: { type: String, enum: ['basic', 'premium'], default: 'basic' },
-    isDeleted: { type: Boolean, default: false },
+    isBlocked: { type: Boolean, default: false },
 }, { timestamps: true });
 UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {

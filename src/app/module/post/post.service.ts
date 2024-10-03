@@ -8,20 +8,29 @@ import User from '../user/user.model'
 import Traveler from '../traveler/traveler.model'
 import { uploadImgToCloudinary } from '../../utils/uploadImgToCloudinary'
 import { JwtPayload } from 'jsonwebtoken'
+import Admin from '../admin/admin.model'
 
 // Function to insert a new post
 const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
   // const author = req.usr
 
   const existAuthorUser = await User.findById(user?._id)
-  const existAuthorTraveler = await Traveler.findOne({ user: user?._id })
-  if (!existAuthorUser || !existAuthorTraveler) {
+
+  let existAuthor
+
+  if (existAuthorUser?.role === 'admin') {
+    existAuthor = await Admin.findOne({ user: user?._id })
+  }
+  if (existAuthorUser?.role === 'traveler') {
+    existAuthor = await Traveler.findOne({ user: user?._id })
+  }
+  if (!existAuthorUser || !existAuthor) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Author not found!')
   }
   // const existUser = await User.findById(existAuthor.user)
 
   const isAlreadyExistUpvote = await Post.findOne({
-    author: existAuthorTraveler._id,
+    author: existAuthor._id,
     upvotes: { $gt: 0 },
   })
 
@@ -48,7 +57,8 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
 
   const post = await Post.create({
     ...payload,
-    author: existAuthorTraveler._id,
+    author: existAuthor._id,
+    authorType: `${existAuthorUser.role?.charAt(0)?.toUpperCase()}${existAuthorUser.role?.slice(1)}`,
   })
   return post
 }
@@ -88,8 +98,31 @@ const getPostById = async (id: string) => {
 const updatePostById = async (
   id: string,
   file: any,
+  user: JwtPayload,
   payload: Partial<TPost>,
 ) => {
+  const existPost = await Post.findById(id)
+  const existAuthorUser = await User.findById(user?._id)
+
+  let existAuthor
+
+  if (existAuthorUser?.role === 'admin') {
+    existAuthor = await Admin.findOne({ user: user?._id })
+  }
+  if (existAuthorUser?.role === 'traveler') {
+    existAuthor = await Traveler.findOne({ user: user?._id })
+  }
+  if (!existAuthorUser || !existAuthor) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Author not found!')
+  }
+
+  if (existPost?.author?.toString() !== existAuthor?._id?.toString()) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this post!',
+    )
+  }
+
   // file upload
   if (file?.path) {
     const cloudinaryRes = await uploadImgToCloudinary(
@@ -109,7 +142,31 @@ const updatePostById = async (
 }
 
 // Function to delete a post by ID
-const deletePostById = async (id: string) => {
+const deletePostById = async (id: string, user: JwtPayload) => {
+  const existPost = await Post.findById(id)
+  const existAuthorUser = await User.findById(user?._id)
+
+  let existAuthor
+
+  if (existAuthorUser?.role === 'admin') {
+    existAuthor = await Admin.findOne({ user: user?._id })
+  }
+  if (existAuthorUser?.role === 'traveler') {
+    existAuthor = await Traveler.findOne({ user: user?._id })
+  }
+  if (!existAuthorUser || !existAuthor) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Author not found!')
+  }
+
+  if (existAuthorUser.role !== 'admin') {
+    if (existPost?.author?.toString() !== existAuthor?._id?.toString()) {
+      throw new AppError(
+        StatusCodes.FORBIDDEN,
+        'You are not allowed to update this post!',
+      )
+    }
+  }
+
   const post = await Post.findByIdAndUpdate(
     id,
     { isDeleted: true },

@@ -41,6 +41,6 @@ router.patch(
 )
 
 // Delete a post by ID
-router.delete('/:id', auth(USER_ROLE.ADMIN), postController.deletePostById)
+router.delete('/:id', auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER), postController.deletePostById)
 
 export { router as postRouter }

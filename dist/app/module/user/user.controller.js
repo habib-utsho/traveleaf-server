@@ -18,21 +18,12 @@ const http_status_codes_1 = require("http-status-codes");
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const appError_1 = __importDefault(require("../../errors/appError"));
 const user_service_1 = require("./user.service");
-const insertPatient = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('insertPatient');
-    const patient = yield user_service_1.userServices.insertPatient(req.file, req.body);
+const insertTraveler = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const traveler = yield user_service_1.userServices.insertTraveler(req.file, req.body);
     (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
         success: true,
-        message: 'Patient inserted successfully!',
-        data: patient,
-    });
-}));
-const insertDoctor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const faculty = yield user_service_1.userServices.insertDoctor(req.file, req.body);
-    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
-        success: true,
-        message: 'Doctor inserted successfully!',
-        data: faculty,
+        message: 'Traveler inserted successfully!',
+        data: traveler,
     });
 }));
 const insertAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -75,8 +66,7 @@ const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
     });
 }));
 exports.userController = {
-    insertPatient,
-    insertDoctor,
+    insertTraveler,
     insertAdmin,
     getAllUsers,
     getUserById,

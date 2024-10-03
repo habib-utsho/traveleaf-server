@@ -24,8 +24,8 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!user) {
         throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'User not found!');
     }
-    if ((user === null || user === void 0 ? void 0 : user.status) === 'inactive') {
-        throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is not active!');
+    if (user === null || user === void 0 ? void 0 : user.isBlocked) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is blocked!');
     }
     const decryptPass = yield bcrypt_1.default.compare(payload.password, user.password);
     if (!decryptPass) {
@@ -61,14 +61,14 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'This user is not found !');
     }
     // checking if the user is already deleted
-    const isDeleted = user === null || user === void 0 ? void 0 : user.isDeleted;
+    const isDeleted = user === null || user === void 0 ? void 0 : user.isBlocked;
     if (isDeleted) {
         throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is deleted !');
     }
-    if (user.status === 'inactive') {
-        throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is not active!');
+    if (user.isBlocked) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is blocked!');
     }
-    if (user.isDeleted) {
+    if (user.isBlocked) {
         throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is deleted!');
     }
     const jwtPayload = { _id: user === null || user === void 0 ? void 0 : user._id, email: user.email, role: user.role };
@@ -91,7 +91,7 @@ const forgetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* 
     const resetLink = `${process.env.CLIENT_URL}/reset-password?email=${user.email}&token=${accessToken}`;
     yield (0, sendEmail_1.sendEmail)({
         toEmail: user.email,
-        subject: 'Reset your password for Doc Eye!',
+        subject: 'Reset your password for TraveLeaf!',
         text: `You requested a password reset for your account. Please click the link below to reset your password:
     ${resetLink} This link will expire in 10 minutes. If you did not request a password reset, please ignore this email.`,
         html: `

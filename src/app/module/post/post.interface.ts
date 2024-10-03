@@ -5,6 +5,7 @@ type TPost = {
   banner: string
   content: string
   author: ObjectId
+  authorType: 'Traveler' | 'Admin'
   category: ObjectId
   isPremium: boolean
   upvotes: number

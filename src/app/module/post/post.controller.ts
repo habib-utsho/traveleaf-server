@@ -49,9 +49,12 @@ const getPostById: RequestHandler = catchAsync(async (req, res) => {
 
 // Update a single post by ID
 const updatePostById: RequestHandler = catchAsync(async (req, res) => {
+  const author = req.user as JwtPayload
+
   const post = await postServices.updatePostById(
     req.params?.id,
     req.file,
+    author,
     req.body,
   )
   if (!post) {
@@ -66,7 +69,9 @@ const updatePostById: RequestHandler = catchAsync(async (req, res) => {
 
 // Delete a single post by ID
 const deletePostById: RequestHandler = catchAsync(async (req, res) => {
-  const post = await postServices.deletePostById(req.params?.id)
+  const author = req.user as JwtPayload
+
+  const post = await postServices.deletePostById(req.params?.id, author)
   if (!post) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!')
   }

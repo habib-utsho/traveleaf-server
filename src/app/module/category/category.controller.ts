@@ -18,11 +18,17 @@ const insertCategory: RequestHandler = catchAsync(async (req, res) => {
 
 // Get all categories
 const getAllCategories: RequestHandler = catchAsync(async (req, res) => {
-  const categories = await categoryServices.getAllCategories(req.query)
+  const { data, total } = await categoryServices.getAllCategories(req.query) // Change to getAllTravelers
+
+  const page = req.query?.page ? Number(req.query.page) : 1
+  const limit = req.query?.limit ? Number(req.query.limit) : 10
+  const totalPage = Math.ceil(total / limit)
+
   sendResponse(res, StatusCodes.OK, {
     success: true,
-    message: 'Categories retrieved successfully!',
-    data: categories,
+    message: 'Categories are retrieved successfully!', // Update message
+    data,
+    meta: { total, page, totalPage, limit },
   })
 })
 

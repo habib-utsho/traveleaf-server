@@ -16,16 +16,16 @@ exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const sendEmail = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
-        host: "smtp.gmail.com",
+        host: 'smtp.gmail.com',
         port: 587,
-        secure: process.env.NODE_ENV === "production", // true for port 465, false for other ports
+        secure: process.env.NODE_ENV === 'production', // true for port 465, false for other ports
         auth: {
             user: process.env.NODE_MAILER_USER,
             pass: process.env.NODE_MAILER_PASSWORD,
         },
     });
     yield transporter.sendMail({
-        from: '"TraveLeaf 🩺" <utsho926@gmail.com>', // sender address
+        from: '"TraveLeaf 🌍" <utsho926@gmail.com>', // sender address
         to: payload.toEmail, // list of receivers
         subject: payload.subject, // Subject line
         text: payload.text,

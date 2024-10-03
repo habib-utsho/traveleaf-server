@@ -43,14 +43,10 @@ const auth = (...requiredRoles) => {
         if (!user) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'This user is not found!');
         }
-        const isDeleted = user === null || user === void 0 ? void 0 : user.isDeleted;
-        if (isDeleted) {
-            throw new appError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'This user is deleted!');
-        }
-        // checking if the user is not active
-        const userStatus = user === null || user === void 0 ? void 0 : user.status;
-        if (userStatus === 'inactive') {
-            throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is not active!');
+        // checking if the user is blocked or not
+        const isBlocked = user === null || user === void 0 ? void 0 : user.isBlocked;
+        if (isBlocked) {
+            throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is blocked!');
         }
         if (requiredRoles && !requiredRoles.includes(role)) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are not authorized!');

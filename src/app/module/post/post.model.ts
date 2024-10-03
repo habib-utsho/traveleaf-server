@@ -18,8 +18,12 @@ const PostSchema = new Schema<TPost>(
     },
     author: {
       type: Types.ObjectId,
-      ref: 'Traveler',
-      default: null,
+      required: true,
+      refPath: 'authorType', // Dynamically set ref based on authorType
+    },
+    authorType: {
+      type: String,
+      enum: ['Traveler', 'Admin'], // Allow only specific types
     },
     category: {
       type: Types.ObjectId,

@@ -18,13 +18,14 @@ const user_model_1 = __importDefault(require("./user.model"));
 const appError_1 = __importDefault(require("../../errors/appError"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const uploadImgToCloudinary_1 = require("../../utils/uploadImgToCloudinary");
-const patient_model_1 = __importDefault(require("../traveller/patient.model"));
+const traveler_model_1 = __importDefault(require("../traveler/traveler.model"));
 const admin_model_1 = __importDefault(require("../admin/admin.model"));
+const sendEmail_1 = require("../../utils/sendEmail");
 const insertTraveler = (file, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
-        const alreadyExistEmail = yield patient_model_1.default.findOne({ email: payload.email });
+        const alreadyExistEmail = yield traveler_model_1.default.findOne({ email: payload.email });
         if (alreadyExistEmail) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Email is already exist. Try with different email!');
         }
@@ -39,22 +40,46 @@ const insertTraveler = (file, payload) => __awaiter(void 0, void 0, void 0, func
             email: payload.email,
             password: payload.password,
             needsPasswordChange: false,
-            role: 'patient',
+            role: 'traveler',
         };
         // Save user
         const user = yield user_model_1.default.create([userData], { session });
         if (!(user === null || user === void 0 ? void 0 : user.length)) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to insert user to db');
         }
-        const patientData = Object.assign(Object.assign({}, payload), { user: user[0]._id });
+        const travelerData = Object.assign(Object.assign({}, payload), { user: user[0]._id });
         // Save patient
-        const patient = yield patient_model_1.default.create([patientData], { session });
-        if (!(patient === null || patient === void 0 ? void 0 : patient.length)) {
-            throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to insert patient!');
+        const traveler = yield traveler_model_1.default.create([travelerData], { session });
+        if (!(traveler === null || traveler === void 0 ? void 0 : traveler.length)) {
+            throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to insert traveler!');
         }
         yield session.commitTransaction();
         yield session.endSession();
-        return patient[0];
+        yield (0, sendEmail_1.sendEmail)({
+            toEmail: payload === null || payload === void 0 ? void 0 : payload.email,
+            subject: 'Your account is created!',
+            text: `Hello, ${payload === null || payload === void 0 ? void 0 : payload.name} Welcome to our platform! Your account has been successfully created. You can log in using the following credentials:
+    
+      Email: ${payload === null || payload === void 0 ? void 0 : payload.email}
+      Password: ${payload.password}
+    
+      Please keep this information secure. You can log in here: ${process.env.CLIENT_URL}/signin`,
+            html: `
+        <p>Welcome to our platform!</p>
+        <p>Your account has been successfully created.</p>
+    
+        <p>You can log in using the following credentials:</p>
+        
+        <p><strong>Email:</strong> ${payload === null || payload === void 0 ? void 0 : payload.email}</p>
+        <p><strong>Password:</strong> ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}</p>
+    
+        <div>
+          <a href="${process.env.CLIENT_URL}/signin" style="background-color: #00ABE4; margin: 5px 0; cursor: pointer; padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none; display: inline-block;">Log in</a>
+        </div>
+    
+      `,
+        });
+        return traveler[0];
     }
     catch (err) {
         yield session.abortTransaction();
@@ -67,13 +92,9 @@ const insertAdmin = (file, payload) => __awaiter(void 0, void 0, void 0, functio
     try {
         session.startTransaction();
         const alreadyExistEmail = yield admin_model_1.default.findOne({ email: payload.email });
-        const alreadyExistNid = yield admin_model_1.default.findOne({ nid: payload.nid });
         const alreadyExistPhone = yield admin_model_1.default.findOne({ phone: payload.phone });
         if (alreadyExistEmail) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Email is already exist. Try with different email!');
-        }
-        if (alreadyExistNid) {
-            throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'NID is already exist. Try with different NID!');
         }
         if (alreadyExistPhone) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Phone is already exist. Try with different phone!');
@@ -103,6 +124,31 @@ const insertAdmin = (file, payload) => __awaiter(void 0, void 0, void 0, functio
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to insert admin!');
         }
         yield session.commitTransaction();
+        yield (0, sendEmail_1.sendEmail)({
+            toEmail: payload === null || payload === void 0 ? void 0 : payload.email,
+            subject: 'Your admin account is created!',
+            text: `Hello, ${payload === null || payload === void 0 ? void 0 : payload.name} Welcome to our platform! Your admin account has been successfully created. You can log in using the following credentials:
+    
+      Email: ${payload === null || payload === void 0 ? void 0 : payload.email}
+      Password: ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}
+    
+      Please keep this information secure. You can log in here: ${process.env.CLIENT_URL}/signin`,
+            html: `
+        <p>Welcome to our platform!</p>
+        <p>Your admin account has been successfully created.</p>
+    
+        <p>You can log in using the following credentials:</p>
+        
+        <p><strong>Email:</strong> ${payload === null || payload === void 0 ? void 0 : payload.email}</p>
+        <p><strong>Password:</strong> ${payload.password || process.env.ADMIN_DEFAULT_PASSWORD}</p>
+    
+        <div>
+          <a href="${process.env.CLIENT_URL}/signin" style="background-color: #00ABE4; margin: 5px 0; cursor: pointer; padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; text-decoration: none; display: inline-block;">Log in</a>
+        </div>
+    
+        <p>Please keep this information secure and change your password after logging in.</p>
+      `,
+        });
         return admin[0];
     }
     catch (err) {
@@ -123,11 +169,8 @@ const getSingleUserById = (id) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const getMe = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     let result;
-    if (payload.role === '') {
-        result = yield Doctor.findOne({ id: payload.id }).select('-__v');
-    }
-    if (payload.role === 'patient') {
-        result = yield patient_model_1.default.findOne({ id: payload.id }).select('-__v');
+    if (payload.role === 'traveler') {
+        result = yield traveler_model_1.default.findOne({ id: payload.id }).select('-__v');
     }
     // if (payload.role === 'admin') {
     //   result = await Admin.findOne({ id: payload.id }).select('-__v')
@@ -135,10 +178,8 @@ const getMe = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 exports.userServices = {
-    insertPatient: insertTraveler,
-    insertDoctor,
+    insertTraveler,
     insertAdmin,
-    // insertAdminToDb,
     getAllUser,
     getSingleUserById,
     getMe,
