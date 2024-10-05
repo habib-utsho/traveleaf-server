@@ -42,6 +42,7 @@ const travelerSchema = new Schema<TTraveler>(
       required: true,
       enum: ['Male', 'Female', 'Other '],
     },
+    status: { type: String, enum: ['basic', 'premium'], default: 'basic' },
     followers: {
       type: [Schema.Types.ObjectId],
       ref: 'Traveler',
@@ -58,6 +59,10 @@ const travelerSchema = new Schema<TTraveler>(
     dateOfBirth: {
       type: Date,
       required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

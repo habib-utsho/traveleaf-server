@@ -73,6 +73,7 @@ export type TTraveler = {
   name: string
   email: string
   phone: string
+  status: 'basic' | 'premium'
   profileImg?: string
   bio: string
   followers: Types.ObjectId[]
@@ -81,4 +82,5 @@ export type TTraveler = {
   gender: TGender
   district: TDistrict
   dateOfBirth: Date
+  isDeleted: boolean
 }

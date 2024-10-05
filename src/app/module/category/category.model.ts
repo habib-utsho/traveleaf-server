@@ -31,6 +31,26 @@ CategorySchema.pre<TCategory>('save', function (next: (err?: any) => void) {
     strict: true,
     replacement: '_',
   })
+  console.log('create middlware', this.name, this.slug)
+
+  next()
+})
+
+CategorySchema.pre('findOneAndUpdate', function (next) {
+  const update = (this as any).getUpdate() as Partial<TCategory>
+
+  // Check if 'name' is being updated
+  if (update?.name) {
+    update.slug = slugify(update.name, {
+      lower: true,
+      strict: true,
+      replacement: '_',
+    })
+
+    // Use `setUpdate` to apply the new slug
+    ;(this as any).setUpdate(update)
+  }
+
   next()
 })
 
