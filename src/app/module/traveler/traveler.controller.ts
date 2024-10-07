@@ -4,6 +4,7 @@ import { RequestHandler } from 'express'
 import { travelerServices } from './traveler.service' // Change to travelerServices
 import catchAsync from '../../utils/catchAsync'
 import AppError from '../../errors/appError'
+import { JwtPayload } from 'jsonwebtoken'
 
 const getAllTravelers: RequestHandler = catchAsync(async (req, res) => {
   const { data, total } = await travelerServices.getAllTravelers(req.query) // Change to getAllTravelers
@@ -29,20 +30,24 @@ const getTravelerById: RequestHandler = catchAsync(async (req, res) => {
   })
 })
 
-// const updateTravelerById: RequestHandler = catchAsync(async (req, res) => {
-//   const traveler = await travelerServices.updateTravelerById( // Change to travelerServices.updateTravelerById
-//     req.params?.id,
-//     req.body,
-//   )
-//   if (!traveler) {
-//     throw new AppError(StatusCodes.BAD_REQUEST, 'Traveler not updated!') // Update message
-//   }
-//   sendResponse(res, StatusCodes.OK, {
-//     success: true,
-//     message: 'Traveler updated successfully!', // Update message
-//     data: traveler,
-//   })
-// })
+const updateTravelerById: RequestHandler = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const traveler = await travelerServices.updateTravelerById(
+    // Change to travelerServices.updateTravelerById
+    req.params?.id,
+    currUser,
+    req.body,
+  )
+  if (!traveler) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Traveler not updated!') // Update message
+  }
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'Traveler updated successfully!', // Update message
+    data: traveler,
+  })
+})
 
 const deleteTravelerById = catchAsync(async (req, res) => {
   const traveler = await travelerServices.deleteTravelerById(req.params.id) // Change to deleteTravelerById
@@ -60,6 +65,6 @@ export const travelerController = {
   // Change export name to travelerController
   getAllTravelers, // Change to getAllTravelers
   getTravelerById, // Change to getTravelerById
-  // updateTravelerById, // Change to updateTravelerById
+  updateTravelerById, // Change to updateTravelerById
   deleteTravelerById, // Change to deleteTravelerById
 }

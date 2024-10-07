@@ -10,6 +10,7 @@ export type TAdmin = {
   profileImg?: string
   dateOfBirth: Date
   district: TDistrict
+  postsCount: number
   nid: number
   isDeleted: boolean
 }

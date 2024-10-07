@@ -46,8 +46,6 @@ CategorySchema.pre('findOneAndUpdate', function (next) {
       strict: true,
       replacement: '_',
     })
-
-    // Use `setUpdate` to apply the new slug
     ;(this as any).setUpdate(update)
   }
 

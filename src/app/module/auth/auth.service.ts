@@ -5,6 +5,8 @@ import { TLoginUser, TPasswordUpdate, TResetPassword } from './auth.interface'
 import bcrypt from 'bcrypt'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { sendEmail } from '../../utils/sendEmail'
+import Admin from '../admin/admin.model'
+import Traveler from '../traveler/traveler.model'
 
 const login = async (payload: TLoginUser) => {
   const user = await User.findOne({ email: payload.email })
@@ -12,17 +14,55 @@ const login = async (payload: TLoginUser) => {
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'User not found!')
   }
-  if (user?.isBlocked) {
+
+  if (user.isBlocked) {
     throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked!')
   }
-  const decryptPass = await bcrypt.compare(payload.password, user.password)
 
-  if (!decryptPass) {
+  const isPasswordMatch = await bcrypt.compare(payload.password, user.password)
+
+  if (!isPasswordMatch) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Incorrect password!')
   }
 
-  const jwtPayload = { _id: user?._id, email: user.email, role: user.role }
+  let jwtPayload: JwtPayload | null = null
 
+  if (user.role === 'admin') {
+    const admin = await Admin.findOne({ user: user._id })
+    if (admin) {
+      jwtPayload = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        user: admin._id,
+        profileImg: admin.profileImg,
+        name: admin.name,
+        phone: admin.phone,
+      }
+    }
+  } else if (user.role === 'traveler') {
+    const traveler = await Traveler.findOne({ user: user._id })
+    if (traveler) {
+      jwtPayload = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        user: traveler._id,
+        profileImg: traveler.profileImg,
+        name: traveler.name,
+        phone: traveler.phone,
+      }
+    }
+  }
+
+  if (!jwtPayload) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Unable to create token payload.',
+    )
+  }
+
+  // Generate access and refresh tokens
   const accessToken = jwt.sign(
     jwtPayload,
     process.env.JWT_ACCESS_SECRET as string,
@@ -43,7 +83,7 @@ const login = async (payload: TLoginUser) => {
     accessToken,
     refreshToken,
     data: user,
-    needsPasswordChange: user?.needsPasswordChange,
+    needsPasswordChange: user.needsPasswordChange,
   }
 }
 

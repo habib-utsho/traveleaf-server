@@ -205,11 +205,11 @@ const getSingleUserById = async (id: string) => {
 const getMe = async (payload: JwtPayload) => {
   let result
   if (payload.role === 'traveler') {
-    result = await Traveler.findOne({ id: payload.id }).select('-__v')
+    result = await Traveler.findOne({ user: payload._id }).select('-__v')
   }
-  // if (payload.role === 'admin') {
-  //   result = await Admin.findOne({ id: payload.id }).select('-__v')
-  // }
+  if (payload.role === 'admin') {
+    result = await Admin.findOne({ user: payload._id }).select('-__v')
+  }
 
   return result
 }

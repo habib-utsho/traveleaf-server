@@ -1,6 +1,10 @@
+import { JwtPayload } from 'jsonwebtoken'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { adminSearchableFields } from './admin.constant'
 import Admin from './admin.model' // Import Admin model
+import { TAdmin } from './admin.interface'
+import { StatusCodes } from 'http-status-codes'
+import AppError from '../../errors/appError'
 
 const getAllAdmins = async (query: Record<string, unknown>) => {
   const adminQuery = new QueryBuilder(Admin.find(), {
@@ -26,36 +30,37 @@ const getAdminById = async (id: string) => {
   return admin
 }
 
-// const updateAdminById = async (id: string, payload: Partial<TAdmin>) => {
-//   const { name, guardian, ...restAdminData } = payload
-//   const modifiedUpdatedData: Record<string, unknown> = {
-//     ...restAdminData,
-//   }
+const updateAdminById = async (
+  id: string,
+  currUser: JwtPayload,
+  payload: Partial<TAdmin>,
+) => {
+  // Find the admin based on the current user
+  const existAdmin = await Admin.findOne({ user: currUser?._id })
+  const updateAdmin = await Admin.findById(id)
 
-//   // update non primitive values
-//   // Update name
-//   if (name && Object.keys(name)?.length > 0) {
-//     for (const [key, value] of Object.entries(name)) {
-//       modifiedUpdatedData[`name.${key}`] = value
-//     }
-//   }
-//   // update guardian
-//   if (guardian && Object.keys(guardian)?.length > 0) {
-//     for (const [key, value] of Object.entries(guardian)) {
-//       modifiedUpdatedData[`guardian.${key}`] = value
-//     }
-//   }
+  // If the admin does not exist
+  if (!existAdmin) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found!')
+  }
 
-//   const admin = await Admin.findByIdAndUpdate(id, modifiedUpdatedData, {
-//     new: true,
-//   })
-//     .select('-__v')
-//     .populate('user', '-createdAt -updatedAt -__v -department')
-//     .populate('academicInfo.department')
-//     .populate('academicInfo.batch')
+  // If the current user is not allowed to update the admin
+  if (updateAdmin?._id !== existAdmin?._id) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this admin!',
+    )
+  }
 
-//   return admin
-// }
+  // Update the admin with the provided payload
+  const admin = await Admin.findByIdAndUpdate(id, payload, {
+    new: true,
+  })
+    .select('-__v')
+    .populate('user', '-createdAt -updatedAt -__v -password')
+
+  return admin
+}
 
 const deleteAdminById = async (id: string) => {
   const admin = await Admin.findByIdAndUpdate(
@@ -69,6 +74,6 @@ const deleteAdminById = async (id: string) => {
 export const adminServices = {
   getAllAdmins,
   getAdminById,
-  // updateAdminById,
+  updateAdminById,
   deleteAdminById,
 }

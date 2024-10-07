@@ -9,7 +9,7 @@ const createAdminZodSchema = z.object({
   gender: z.enum(['Male', 'Female', 'Other'], {
     required_error: 'Gender is required.',
   }),
-  dateOfBirth: z.string({required_error: 'Date of birth is required.'}),
+  dateOfBirth: z.string({ required_error: 'Date of birth is required.' }),
   district: z.enum(
     [
       'Dhaka',
@@ -81,5 +81,93 @@ const createAdminZodSchema = z.object({
   ),
   isDeleted: z.boolean().default(false), // Default value
 })
+const updateAdminZodSchema = z.object({
+  name: z.string().min(1, 'Name is required.').optional(),
+  email: z
+    .string({ required_error: 'Email is required.' })
+    .email('Invalid email format.')
+    .optional(),
+  phone: z.string({ required_error: 'Phone number is required.' }).optional(),
+  gender: z
+    .enum(['Male', 'Female', 'Other'], {
+      required_error: 'Gender is required.',
+    })
+    .optional(),
+  dateOfBirth: z
+    .string({ required_error: 'Date of birth is required.' })
+    .optional(),
+  district: z
+    .enum(
+      [
+        'Dhaka',
+        'Faridpur',
+        'Gazipur',
+        'Gopalganj',
+        'Jamalpur',
+        'Kishoreganj',
+        'Madaripur',
+        'Manikganj',
+        'Munshiganj',
+        'Mymensingh',
+        'Narayanganj',
+        'Narsingdi',
+        'Netrokona',
+        'Rajbari',
+        'Shariatpur',
+        'Sherpur',
+        'Tangail',
+        'Bogra',
+        'Joypurhat',
+        'Naogaon',
+        'Natore',
+        'Chapainawabganj',
+        'Pabna',
+        'Rajshahi',
+        'Sirajganj',
+        'Dinajpur',
+        'Gaibandha',
+        'Kurigram',
+        'Lalmonirhat',
+        'Nilphamari',
+        'Panchagarh',
+        'Rangpur',
+        'Thakurgaon',
+        'Barguna',
+        'Barishal',
+        'Bhola',
+        'Jhalokati',
+        'Patuakhali',
+        'Pirojpur',
+        'Bandarban',
+        'Brahmanbaria',
+        'Chandpur',
+        'Chattogram',
+        'Cumilla',
+        "Cox's Bazar",
+        'Feni',
+        'Khagrachari',
+        'Lakshmipur',
+        'Noakhali',
+        'Rangamati',
+        'Habiganj',
+        'Moulvibazar',
+        'Sunamganj',
+        'Sylhet',
+        'Bagerhat',
+        'Chuadanga',
+        'Jessore',
+        'Jhenaidah',
+        'Khulna',
+        'Kushtia',
+        'Magura',
+        'Meherpur',
+        'Narail',
+        'Satkhira',
+      ],
+      { required_error: 'District is required.' },
+    )
+    .optional(),
+  isDeleted: z.boolean().default(false).optional(), // Default value
+})
 
-export { createAdminZodSchema }
+export { createAdminZodSchema, updateAdminZodSchema }

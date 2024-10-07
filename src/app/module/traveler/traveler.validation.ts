@@ -85,10 +85,28 @@ const createTravelerZodSchema = z.object({
     .refine((value) => !isNaN(Date.parse(value)), {
       message: 'Invalid date format.',
     }),
-  profileImg: z.string().optional(), // Optional field for profile image
-  postsCount: z.number().optional().default(0), // Optional field, default to 0
-  followers: z.array(z.string()).optional(), // Optional array of follower IDs
-  following: z.array(z.string()).optional(), // Optional array of following IDs
+  isDeleted: z.boolean().default(false).optional(), // Default value
+})
+const updateTravelerZodSchema = z.object({
+  name: z.string().min(1, 'Name is required.').optional(),
+  phone: z
+    .string()
+    .min(10, 'Phone number must be at least 10 characters long.')
+    .regex(/^\d+$/, 'Phone number must contain only digits.')
+    .optional(),
+  bio: z.string().min(1, 'Bio is required.').optional(),
+  gender: z
+    .enum(['Male', 'Female', 'Other'], {
+      required_error: 'Gender is required.',
+    })
+    .optional(),
+  dateOfBirth: z
+    .string({ required_error: 'Date of birth is required.' })
+    .refine((value) => !isNaN(Date.parse(value)), {
+      message: 'Invalid date format.',
+    })
+    .optional(),
+  isDeleted: z.boolean().default(false).optional(), // Default value
 })
 
-export { createTravelerZodSchema }
+export { createTravelerZodSchema, updateTravelerZodSchema }

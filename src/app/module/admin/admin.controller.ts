@@ -4,6 +4,7 @@ import { RequestHandler } from 'express'
 import { adminServices } from './admin.service' // Change to adminServices
 import catchAsync from '../../utils/catchAsync'
 import AppError from '../../errors/appError'
+import { JwtPayload } from 'jsonwebtoken'
 
 const getAllAdmins: RequestHandler = catchAsync(async (req, res) => {
   const { data, total } = await adminServices.getAllAdmins(req.query)
@@ -29,20 +30,24 @@ const getAdminById: RequestHandler = catchAsync(async (req, res) => {
   })
 })
 
-// const updateAdminById: RequestHandler = catchAsync(async (req, res) => {
-//   const admin = await adminServices.updateAdminById( // Change to adminServices.updateAdminById
-//     req.params?.id,
-//     req.body,
-//   )
-//   if (!admin) {
-//     throw new AppError(StatusCodes.BAD_REQUEST, 'Admin not updated!') // Update message
-//   }
-//   sendResponse(res, StatusCodes.OK, {
-//     success: true,
-//     message: 'Admin updated successfully!', // Update message
-//     data: admin,
-//   })
-// })
+const updateAdminById: RequestHandler = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const admin = await adminServices.updateAdminById(
+    // Change to adminServices.updateAdminById
+    req.params?.id,
+    currUser,
+    req.body,
+  )
+  if (!admin) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Admin not updated!') // Update message
+  }
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'Admin updated successfully!', // Update message
+    data: admin,
+  })
+})
 
 const deleteAdminById = catchAsync(async (req, res) => {
   const admin = await adminServices.deleteAdminById(req.params.id)
@@ -60,6 +65,6 @@ export const adminController = {
   // Change export name to adminController
   getAllAdmins, // Change to getAllAdmins
   getAdminById, // Change to getAdminById
-  // updateAdminById, // Change to updateAdminById
+  updateAdminById, // Change to updateAdminById
   deleteAdminById, // Change to deleteAdminById
 }
