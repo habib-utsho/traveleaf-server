@@ -40,20 +40,21 @@ const getTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
         data: traveler,
     });
 }));
-// const updateTravelerById: RequestHandler = catchAsync(async (req, res) => {
-//   const traveler = await travelerServices.updateTravelerById( // Change to travelerServices.updateTravelerById
-//     req.params?.id,
-//     req.body,
-//   )
-//   if (!traveler) {
-//     throw new AppError(StatusCodes.BAD_REQUEST, 'Traveler not updated!') // Update message
-//   }
-//   sendResponse(res, StatusCodes.OK, {
-//     success: true,
-//     message: 'Traveler updated successfully!', // Update message
-//     data: traveler,
-//   })
-// })
+const updateTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const currUser = req.user;
+    const traveler = yield traveler_service_1.travelerServices.updateTravelerById(
+    // Change to travelerServices.updateTravelerById
+    (_a = req.params) === null || _a === void 0 ? void 0 : _a.id, req.file, currUser, req.body);
+    if (!traveler) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Traveler not updated!'); // Update message
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'Traveler updated successfully!', // Update message
+        data: traveler,
+    });
+}));
 const deleteTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const traveler = yield traveler_service_1.travelerServices.deleteTravelerById(req.params.id); // Change to deleteTravelerById
     if (!traveler) {
@@ -69,6 +70,6 @@ exports.travelerController = {
     // Change export name to travelerController
     getAllTravelers, // Change to getAllTravelers
     getTravelerById, // Change to getTravelerById
-    // updateTravelerById, // Change to updateTravelerById
+    updateTravelerById, // Change to updateTravelerById
     deleteTravelerById, // Change to deleteTravelerById
 };

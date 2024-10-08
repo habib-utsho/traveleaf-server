@@ -170,11 +170,11 @@ const getSingleUserById = (id) => __awaiter(void 0, void 0, void 0, function* ()
 const getMe = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     let result;
     if (payload.role === 'traveler') {
-        result = yield traveler_model_1.default.findOne({ id: payload.id }).select('-__v');
+        result = yield traveler_model_1.default.findOne({ user: payload._id }).select('-__v');
     }
-    // if (payload.role === 'admin') {
-    //   result = await Admin.findOne({ id: payload.id }).select('-__v')
-    // }
+    if (payload.role === 'admin') {
+        result = yield admin_model_1.default.findOne({ user: payload._id }).select('-__v');
+    }
     return result;
 });
 exports.userServices = {

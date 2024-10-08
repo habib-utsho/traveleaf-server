@@ -17,6 +17,8 @@ const appError_1 = __importDefault(require("../errors/appError"));
 const http_status_codes_1 = require("http-status-codes");
 const user_model_1 = __importDefault(require("../module/user/user.model"));
 const jwtVerify_1 = __importDefault(require("../utils/jwtVerify"));
+const admin_model_1 = __importDefault(require("../module/admin/admin.model"));
+const traveler_model_1 = __importDefault(require("../module/traveler/traveler.model"));
 const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
@@ -51,7 +53,16 @@ const auth = (...requiredRoles) => {
         if (requiredRoles && !requiredRoles.includes(role)) {
             throw new appError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are not authorized!');
         }
-        req.user = decoded;
+        let updatedDecoded;
+        if (decoded.role === 'admin') {
+            const admin = yield admin_model_1.default.findOne({ user: _id });
+            updatedDecoded = Object.assign(Object.assign({}, decoded), { user: admin === null || admin === void 0 ? void 0 : admin._id, profileImg: admin === null || admin === void 0 ? void 0 : admin.profileImg, name: admin === null || admin === void 0 ? void 0 : admin.name, phone: admin === null || admin === void 0 ? void 0 : admin.phone });
+        }
+        if (decoded.role === 'traveler') {
+            const traveler = yield traveler_model_1.default.findOne({ user: _id });
+            updatedDecoded = Object.assign(Object.assign({}, decoded), { user: traveler === null || traveler === void 0 ? void 0 : traveler._id, profileImg: traveler === null || traveler === void 0 ? void 0 : traveler.profileImg, name: traveler === null || traveler === void 0 ? void 0 : traveler.name, phone: traveler === null || traveler === void 0 ? void 0 : traveler.phone });
+        }
+        req.user = updatedDecoded;
         next();
     }));
 };

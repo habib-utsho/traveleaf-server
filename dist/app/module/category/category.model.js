@@ -30,6 +30,20 @@ CategorySchema.pre('save', function (next) {
         strict: true,
         replacement: '_',
     });
+    console.log('create middlware', this.name, this.slug);
+    next();
+});
+CategorySchema.pre('findOneAndUpdate', function (next) {
+    const update = this.getUpdate();
+    // Check if 'name' is being updated
+    if (update === null || update === void 0 ? void 0 : update.name) {
+        update.slug = (0, slugify_1.default)(update.name, {
+            lower: true,
+            strict: true,
+            replacement: '_',
+        });
+        this.setUpdate(update);
+    }
     next();
 });
 const Category = (0, mongoose_1.model)('Category', CategorySchema);

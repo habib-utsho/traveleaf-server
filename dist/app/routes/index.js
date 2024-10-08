@@ -10,6 +10,7 @@ const comment_route_1 = require("../module/comment/comment.route");
 const package_route_1 = require("../module/package/package.route");
 const subscription_route_1 = require("../module/subscription/subscription.route");
 const post_route_1 = require("../module/post/post.route");
+const stats_route_1 = require("../module/stats/stats.route");
 const router = (0, express_1.Router)();
 const routes = [
     {
@@ -47,6 +48,10 @@ const routes = [
     {
         path: '/post',
         route: post_route_1.postRouter,
+    },
+    {
+        path: '/stats',
+        route: stats_route_1.statsRouter,
     },
 ];
 routes.forEach((route) => router.use(route.path, route.route));

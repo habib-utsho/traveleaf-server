@@ -9,6 +9,10 @@ const PackageSchema = new Schema<TPackage>(
       enum: ['Basic', 'Standard', 'Premium'], // List of available plans
       unique: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     price: {
       type: Number,
       default: 0, // Default price

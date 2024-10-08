@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTravelerZodSchema = void 0;
+exports.updateTravelerZodSchema = exports.createTravelerZodSchema = void 0;
 const zod_1 = require("zod");
 const createTravelerZodSchema = zod_1.z.object({
     name: zod_1.z.string().min(1, 'Name is required.'),
@@ -84,9 +84,28 @@ const createTravelerZodSchema = zod_1.z.object({
         .refine((value) => !isNaN(Date.parse(value)), {
         message: 'Invalid date format.',
     }),
-    profileImg: zod_1.z.string().optional(), // Optional field for profile image
-    postsCount: zod_1.z.number().optional().default(0), // Optional field, default to 0
-    followers: zod_1.z.array(zod_1.z.string()).optional(), // Optional array of follower IDs
-    following: zod_1.z.array(zod_1.z.string()).optional(), // Optional array of following IDs
+    isDeleted: zod_1.z.boolean().default(false).optional(), // Default value
 });
 exports.createTravelerZodSchema = createTravelerZodSchema;
+const updateTravelerZodSchema = zod_1.z.object({
+    name: zod_1.z.string().min(1, 'Name is required.').optional(),
+    phone: zod_1.z
+        .string()
+        .min(10, 'Phone number must be at least 10 characters long.')
+        .regex(/^\d+$/, 'Phone number must contain only digits.')
+        .optional(),
+    bio: zod_1.z.string().min(1, 'Bio is required.').optional(),
+    gender: zod_1.z
+        .enum(['Male', 'Female', 'Other'], {
+        required_error: 'Gender is required.',
+    })
+        .optional(),
+    dateOfBirth: zod_1.z
+        .string({ required_error: 'Date of birth is required.' })
+        .refine((value) => !isNaN(Date.parse(value)), {
+        message: 'Invalid date format.',
+    })
+        .optional(),
+    isDeleted: zod_1.z.boolean().default(false).optional(), // Default value
+});
+exports.updateTravelerZodSchema = updateTravelerZodSchema;

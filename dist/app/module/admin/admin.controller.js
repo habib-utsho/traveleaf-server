@@ -40,20 +40,21 @@ const getAdminById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: admin,
     });
 }));
-// const updateAdminById: RequestHandler = catchAsync(async (req, res) => {
-//   const admin = await adminServices.updateAdminById( // Change to adminServices.updateAdminById
-//     req.params?.id,
-//     req.body,
-//   )
-//   if (!admin) {
-//     throw new AppError(StatusCodes.BAD_REQUEST, 'Admin not updated!') // Update message
-//   }
-//   sendResponse(res, StatusCodes.OK, {
-//     success: true,
-//     message: 'Admin updated successfully!', // Update message
-//     data: admin,
-//   })
-// })
+const updateAdminById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const currUser = req.user;
+    const admin = yield admin_service_1.adminServices.updateAdminById(
+    // Change to adminServices.updateAdminById
+    (_a = req.params) === null || _a === void 0 ? void 0 : _a.id, req.file, currUser, req.body);
+    if (!admin) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Admin not updated!'); // Update message
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'Admin updated successfully!', // Update message
+        data: admin,
+    });
+}));
 const deleteAdminById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const admin = yield admin_service_1.adminServices.deleteAdminById(req.params.id);
     if (!admin) {
@@ -69,6 +70,6 @@ exports.adminController = {
     // Change export name to adminController
     getAllAdmins, // Change to getAllAdmins
     getAdminById, // Change to getAdminById
-    // updateAdminById, // Change to updateAdminById
+    updateAdminById, // Change to updateAdminById
     deleteAdminById, // Change to deleteAdminById
 };

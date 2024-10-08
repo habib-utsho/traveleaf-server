@@ -12,7 +12,7 @@ const insertTraveler: RequestHandler = catchAsync(async (req, res) => {
 
   sendResponse(res, StatusCodes.OK, {
     success: true,
-    message: 'Traveler inserted successfully!',
+    message: 'Traveler account created successfully!',
     data: traveler,
   })
 })
@@ -21,7 +21,7 @@ const insertAdmin: RequestHandler = catchAsync(async (req, res) => {
   const admin = await userServices.insertAdmin(req.file, req.body)
   sendResponse(res, StatusCodes.OK, {
     success: true,
-    message: 'Admin inserted successfully!',
+    message: 'Admin account created successfully!',
     data: admin,
   })
 })

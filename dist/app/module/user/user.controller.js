@@ -22,7 +22,7 @@ const insertTraveler = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     const traveler = yield user_service_1.userServices.insertTraveler(req.file, req.body);
     (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
         success: true,
-        message: 'Traveler inserted successfully!',
+        message: 'Traveler account created successfully!',
         data: traveler,
     });
 }));
@@ -30,7 +30,7 @@ const insertAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     const admin = yield user_service_1.userServices.insertAdmin(req.file, req.body);
     (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
         success: true,
-        message: 'Admin inserted successfully!',
+        message: 'Admin account created successfully!',
         data: admin,
     });
 }));

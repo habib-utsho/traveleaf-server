@@ -16,6 +16,9 @@ exports.adminServices = void 0;
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const admin_constant_1 = require("./admin.constant");
 const admin_model_1 = __importDefault(require("./admin.model")); // Import Admin model
+const http_status_codes_1 = require("http-status-codes");
+const appError_1 = __importDefault(require("../../errors/appError"));
+const uploadImgToCloudinary_1 = require("../../utils/uploadImgToCloudinary");
 const getAllAdmins = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const adminQuery = new QueryBuilder_1.default(admin_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort} isDeleted` }))
         .searchQuery(admin_constant_1.adminSearchableFields) // Use the Admin searchable fields
@@ -34,33 +37,33 @@ const getAdminById = (id) => __awaiter(void 0, void 0, void 0, function* () {
         .populate('user', '-createdAt -updatedAt -__v');
     return admin;
 });
-// const updateAdminById = async (id: string, payload: Partial<TAdmin>) => {
-//   const { name, guardian, ...restAdminData } = payload
-//   const modifiedUpdatedData: Record<string, unknown> = {
-//     ...restAdminData,
-//   }
-//   // update non primitive values
-//   // Update name
-//   if (name && Object.keys(name)?.length > 0) {
-//     for (const [key, value] of Object.entries(name)) {
-//       modifiedUpdatedData[`name.${key}`] = value
-//     }
-//   }
-//   // update guardian
-//   if (guardian && Object.keys(guardian)?.length > 0) {
-//     for (const [key, value] of Object.entries(guardian)) {
-//       modifiedUpdatedData[`guardian.${key}`] = value
-//     }
-//   }
-//   const admin = await Admin.findByIdAndUpdate(id, modifiedUpdatedData, {
-//     new: true,
-//   })
-//     .select('-__v')
-//     .populate('user', '-createdAt -updatedAt -__v -department')
-//     .populate('academicInfo.department')
-//     .populate('academicInfo.batch')
-//   return admin
-// }
+const updateAdminById = (id, file, currUser, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // Find the admin based on the current user
+    const existAdmin = yield admin_model_1.default.findOne({ user: currUser === null || currUser === void 0 ? void 0 : currUser._id });
+    const updateAdmin = yield admin_model_1.default.findById(id);
+    // If the admin does not exist
+    if (!existAdmin) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Admin not found!');
+    }
+    // If the current user is not allowed to update the admin
+    if ((updateAdmin === null || updateAdmin === void 0 ? void 0 : updateAdmin._id.toString()) !== (existAdmin === null || existAdmin === void 0 ? void 0 : existAdmin._id.toString())) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'You are not allowed to update this admin!');
+    }
+    // file upload
+    if (file === null || file === void 0 ? void 0 : file.path) {
+        const cloudinaryRes = yield (0, uploadImgToCloudinary_1.uploadImgToCloudinary)(`traveleaf-${Date.now()}`, file.path);
+        if (cloudinaryRes === null || cloudinaryRes === void 0 ? void 0 : cloudinaryRes.secure_url) {
+            payload.profileImg = cloudinaryRes.secure_url;
+        }
+    }
+    // Update the admin with the provided payload
+    const admin = yield admin_model_1.default.findByIdAndUpdate(id, payload, {
+        new: true,
+    })
+        .select('-__v')
+        .populate('user', '-createdAt -updatedAt -__v -password');
+    return admin;
+});
 const deleteAdminById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const admin = yield admin_model_1.default.findByIdAndUpdate(id, { isDeleted: true }, { new: true }).select('-__v');
     return admin;
@@ -68,6 +71,6 @@ const deleteAdminById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 exports.adminServices = {
     getAllAdmins,
     getAdminById,
-    // updateAdminById,
+    updateAdminById,
     deleteAdminById,
 };

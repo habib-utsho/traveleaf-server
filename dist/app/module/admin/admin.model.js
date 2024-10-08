@@ -55,6 +55,10 @@ const AdminSchema = new mongoose_1.Schema({
         type: String,
         default: null,
     },
+    postsCount: {
+        type: Number,
+        default: 0,
+    },
     dateOfBirth: {
         type: Date,
         required: true,

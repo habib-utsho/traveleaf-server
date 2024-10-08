@@ -41,6 +41,7 @@ const travelerSchema = new mongoose_1.Schema({
         required: true,
         enum: ['Male', 'Female', 'Other '],
     },
+    status: { type: String, enum: ['basic', 'premium'], default: 'basic' },
     followers: {
         type: [mongoose_1.Schema.Types.ObjectId],
         ref: 'Traveler',
@@ -57,6 +58,10 @@ const travelerSchema = new mongoose_1.Schema({
     dateOfBirth: {
         type: Date,
         required: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
     },
 }, { timestamps: true });
 // Traveler Model
