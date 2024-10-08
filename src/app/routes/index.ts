@@ -8,6 +8,7 @@ import { commentRouter } from '../module/comment/comment.route'
 import { packageRouter } from '../module/package/package.route'
 import { subscriptionRouter } from '../module/subscription/subscription.route'
 import { postRouter } from '../module/post/post.route'
+import { statsRouter } from '../module/stats/stats.route'
 
 const router = Router()
 const routes = [
@@ -46,6 +47,10 @@ const routes = [
   {
     path: '/post',
     route: postRouter,
+  },
+  {
+    path: '/stats',
+    route: statsRouter,
   },
 ]
 

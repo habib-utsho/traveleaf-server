@@ -36,6 +36,7 @@ const updateAdminById: RequestHandler = catchAsync(async (req, res) => {
   const admin = await adminServices.updateAdminById(
     // Change to adminServices.updateAdminById
     req.params?.id,
+    req.file,
     currUser,
     req.body,
   )

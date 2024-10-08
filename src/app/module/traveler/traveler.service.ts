@@ -5,6 +5,7 @@ import { TTraveler } from './traveler.interface'
 import Traveler from './traveler.model' // Import Traveler model
 import AppError from '../../errors/appError'
 import { StatusCodes } from 'http-status-codes'
+import { uploadImgToCloudinary } from '../../utils/uploadImgToCloudinary'
 
 const getAllTravelers = async (query: Record<string, unknown>) => {
   const travelerQuery = new QueryBuilder(Traveler.find(), {
@@ -36,6 +37,7 @@ const getTravelerById = async (id: string) => {
 
 const updateTravelerById = async (
   id: string,
+  file: any,
   currUser: JwtPayload,
   payload: Partial<TTraveler>,
 ) => {
@@ -46,11 +48,22 @@ const updateTravelerById = async (
     throw new AppError(StatusCodes.NOT_FOUND, 'Traveler not found!')
   }
 
-  if (updateTraveler?._id !== existTraveler?._id) {
+  if (updateTraveler?._id.toString() !== existTraveler?._id.toString()) {
     throw new AppError(
       StatusCodes.FORBIDDEN,
       'You are not allowed to update this post!',
     )
+  }
+
+  // file upload
+  if (file?.path) {
+    const cloudinaryRes = await uploadImgToCloudinary(
+      `traveleaf-${Date.now()}`,
+      file.path,
+    )
+    if (cloudinaryRes?.secure_url) {
+      payload.profileImg = cloudinaryRes.secure_url
+    }
   }
 
   const traveler = await Traveler.findByIdAndUpdate(id, payload, {

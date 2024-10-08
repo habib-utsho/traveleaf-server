@@ -36,6 +36,7 @@ const updateTravelerById: RequestHandler = catchAsync(async (req, res) => {
   const traveler = await travelerServices.updateTravelerById(
     // Change to travelerServices.updateTravelerById
     req.params?.id,
+    req.file,
     currUser,
     req.body,
   )

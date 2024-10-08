@@ -5,6 +5,7 @@ import Admin from './admin.model' // Import Admin model
 import { TAdmin } from './admin.interface'
 import { StatusCodes } from 'http-status-codes'
 import AppError from '../../errors/appError'
+import { uploadImgToCloudinary } from '../../utils/uploadImgToCloudinary'
 
 const getAllAdmins = async (query: Record<string, unknown>) => {
   const adminQuery = new QueryBuilder(Admin.find(), {
@@ -32,6 +33,7 @@ const getAdminById = async (id: string) => {
 
 const updateAdminById = async (
   id: string,
+  file: any,
   currUser: JwtPayload,
   payload: Partial<TAdmin>,
 ) => {
@@ -45,11 +47,22 @@ const updateAdminById = async (
   }
 
   // If the current user is not allowed to update the admin
-  if (updateAdmin?._id !== existAdmin?._id) {
+  if (updateAdmin?._id.toString() !== existAdmin?._id.toString()) {
     throw new AppError(
       StatusCodes.FORBIDDEN,
       'You are not allowed to update this admin!',
     )
+  }
+
+  // file upload
+  if (file?.path) {
+    const cloudinaryRes = await uploadImgToCloudinary(
+      `traveleaf-${Date.now()}`,
+      file.path,
+    )
+    if (cloudinaryRes?.secure_url) {
+      payload.profileImg = cloudinaryRes.secure_url
+    }
   }
 
   // Update the admin with the provided payload
