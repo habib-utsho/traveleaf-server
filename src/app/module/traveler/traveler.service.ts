@@ -6,6 +6,7 @@ import Traveler from './traveler.model' // Import Traveler model
 import AppError from '../../errors/appError'
 import { StatusCodes } from 'http-status-codes'
 import { uploadImgToCloudinary } from '../../utils/uploadImgToCloudinary'
+import mongoose from 'mongoose'
 
 const getAllTravelers = async (query: Record<string, unknown>) => {
   const travelerQuery = new QueryBuilder(Traveler.find(), {
@@ -84,10 +85,134 @@ const deleteTravelerById = async (id: string) => {
   return traveler
 }
 
+const followTraveler = async (travelerId: string, currUser: JwtPayload) => {
+  const session = await mongoose.startSession() // Start a session
+  session.startTransaction() // Start the transaction
+
+  try {
+    const travelerToFollow =
+      await Traveler.findById(travelerId).session(session) // Use session in queries
+    const currentUserTraveler = await Traveler.findOne({
+      user: currUser?._id,
+    }).session(session)
+
+    if (!travelerToFollow) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'Traveler not found!')
+    }
+
+    if (!currentUserTraveler) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'Current user not found!')
+    }
+
+    if (
+      currentUserTraveler._id.toString() === travelerToFollow._id.toString()
+    ) {
+      throw new AppError(StatusCodes.BAD_REQUEST, "You can't follow yourself!")
+    }
+
+    // Check if already following
+    if (
+      travelerToFollow.followers.includes(currentUserTraveler._id) ||
+      currentUserTraveler.following.includes(travelerToFollow._id)
+    ) {
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        'Already following this traveler',
+      )
+    }
+
+    // Add current user's ID to the traveler's followers array
+    travelerToFollow.followers.push(currentUserTraveler._id)
+
+    // Add target traveler's ID to the current user's following array
+    currentUserTraveler.following.push(travelerToFollow._id)
+
+    // Save both travelers with session
+    await travelerToFollow.save({ session })
+    await currentUserTraveler.save({ session })
+
+    // Commit the transaction
+    await session.commitTransaction()
+    session.endSession() // End the session
+
+    return currentUserTraveler
+  } catch (error) {
+    await session.abortTransaction() // Abort the transaction if an error occurs
+    session.endSession() // End the session
+    throw error // Rethrow the error to handle it higher up
+  }
+}
+
+const unfollowTraveler = async (travelerId: string, currUser: JwtPayload) => {
+  const session = await mongoose.startSession() // Start a session
+  session.startTransaction() // Start the transaction
+
+  try {
+    const travelerToUnfollow =
+      await Traveler.findById(travelerId).session(session)
+    const currentUserTraveler = await Traveler.findOne({
+      user: currUser?._id,
+    }).session(session)
+
+    if (!travelerToUnfollow) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'Traveler not found!')
+    }
+
+    if (!currentUserTraveler) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'Current user not found!')
+    }
+
+    if (
+      currentUserTraveler._id.toString() === travelerToUnfollow._id.toString()
+    ) {
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        "You can't unfollow yourself!",
+      )
+    }
+
+    // Check if not already following
+    if (
+      !travelerToUnfollow.followers.includes(currentUserTraveler._id) ||
+      !currentUserTraveler.following.includes(travelerToUnfollow._id)
+    ) {
+      throw new AppError(
+        StatusCodes.BAD_REQUEST,
+        "You aren't following this traveler",
+      )
+    }
+
+    // Remove current user's ID from the traveler's followers array
+    travelerToUnfollow.followers = travelerToUnfollow.followers.filter(
+      (follower) => follower.toString() !== currentUserTraveler._id.toString(),
+    )
+
+    // Remove target traveler's ID from the current user's following array
+    currentUserTraveler.following = currentUserTraveler.following.filter(
+      (following) => following.toString() !== travelerId,
+    )
+
+    // Save both travelers with session
+    await travelerToUnfollow.save({ session })
+    await currentUserTraveler.save({ session })
+
+    // Commit the transaction
+    await session.commitTransaction()
+    session.endSession() // End the session
+
+    return currentUserTraveler
+  } catch (error) {
+    await session.abortTransaction() // Abort the transaction if an error occurs
+    session.endSession() // End the session
+    throw error // Rethrow the error to handle it higher up
+  }
+}
+
 export const travelerServices = {
-  // Change export name to travelerServices
-  getAllTravelers, // Change to getAllTravelers
-  getTravelerById, // Change to getTravelerById
-  updateTravelerById, // Change to updateTravelerById
-  deleteTravelerById, // Change to deleteTravelerById
+  getAllTravelers,
+  getTravelerById,
+  updateTravelerById,
+  deleteTravelerById,
+  followTraveler,
+  unfollowTraveler,
 }

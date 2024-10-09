@@ -3,6 +3,7 @@ import { TPackage } from './package.interface'
 import Package from './package.model'
 import AppError from '../../errors/appError'
 import QueryBuilder from '../../builder/QueryBuilder'
+import { packageSearchableFields } from './package.constant'
 
 const insertPackage = async (payload: TPackage) => {
   let updatedPayload = { ...payload }
@@ -22,7 +23,7 @@ const getAllPackages = async (query: Record<string, unknown>) => {
     ...query,
     sort: `${query.sort}`,
   })
-    .searchQuery([])
+    .searchQuery(packageSearchableFields)
     .filterQuery()
     .sortQuery()
     .paginateQuery()

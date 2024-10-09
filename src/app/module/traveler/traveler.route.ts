@@ -28,4 +28,16 @@ router.delete(
   travelerController.deleteTravelerById,
 )
 
+router.patch(
+  '/follow-traveler/:id',
+  auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER),
+  travelerController.followTravelerById,
+)
+
+router.patch(
+  '/unfollow-traveler/:id',
+  auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER),
+  travelerController.unfollowTravelerById,
+)
+
 export { router as travelerRouter }

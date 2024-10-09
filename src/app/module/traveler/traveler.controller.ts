@@ -61,6 +61,48 @@ const deleteTravelerById = catchAsync(async (req, res) => {
     data: traveler,
   })
 })
+const followTravelerById = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const traveler = await travelerServices.followTraveler(
+    req.params.id,
+    currUser,
+  )
+
+  if (!traveler) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'The traveler you are trying to follow does not exist.',
+    )
+  }
+
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'You have successfully followed the traveler.', // Updated success message
+    data: traveler,
+  })
+})
+const unfollowTravelerById = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const traveler = await travelerServices.unfollowTraveler(
+    req.params.id,
+    currUser,
+  )
+
+  if (!traveler) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'The traveler you are trying to unfollow does not exist.',
+    )
+  }
+
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'You have successfully unfollowed the traveler.', // Updated success message
+    data: traveler,
+  })
+})
 
 export const travelerController = {
   // Change export name to travelerController
@@ -68,4 +110,6 @@ export const travelerController = {
   getTravelerById, // Change to getTravelerById
   updateTravelerById, // Change to updateTravelerById
   deleteTravelerById, // Change to deleteTravelerById
+  followTravelerById,
+  unfollowTravelerById,
 }
