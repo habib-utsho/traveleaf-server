@@ -13,8 +13,11 @@ import cron from 'node-cron'
 
 const app = express()
 
+const axiosInstance = axios.create({
+  timeout: 10000, // 10 seconds timeout
+})
 cron.schedule('*/20 * * * *', () => {
-  axios
+  axiosInstance
     .get(`https://traveleaf-server.onrender.com`)
     .then((response) =>
       console.log('😀🎉 Self-ping successful:', response.status),
