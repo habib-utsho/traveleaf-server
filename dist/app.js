@@ -21,8 +21,11 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const axios_1 = __importDefault(require("axios"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const app = (0, express_1.default)();
+const axiosInstance = axios_1.default.create({
+    timeout: 10000, // 10 seconds timeout
+});
 node_cron_1.default.schedule('*/20 * * * *', () => {
-    axios_1.default
+    axiosInstance
         .get(`https://traveleaf-server.onrender.com`)
         .then((response) => console.log('😀🎉 Self-ping successful:', response.status))
         .catch((error) => console.error('😡 Self-ping failed:', error.message));
