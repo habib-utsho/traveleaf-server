@@ -20,6 +20,15 @@ const getAllTravelers = async (query: Record<string, unknown>) => {
     .fieldFilteringQuery()
     .populateQuery([
       { path: 'user', select: '-createdAt -updatedAt -__v -password' },
+
+      {
+        path: 'followers',
+        select: 'name profileImg',
+      },
+      {
+        path: 'following',
+        select: 'name profileImg',
+      },
     ])
 
   const result = await travelerQuery?.queryModel
@@ -31,8 +40,22 @@ const getAllTravelers = async (query: Record<string, unknown>) => {
 
 const getTravelerById = async (id: string) => {
   const traveler = await Traveler.findById(id)
-    .select('-__v')
-    .populate('user', '-createdAt -updatedAt -__v')
+    .select('-__v') // Exclude the __v field
+    .populate([
+      {
+        path: 'user', // Path to the field to populate
+        select: '-createdAt -updatedAt -__v -password', // Fields to exclude from the populated user document
+      },
+      {
+        path: 'followers', // Path to populate followers
+        select: 'name profileImg', // Fields to include from the populated follower documents
+      },
+      {
+        path: 'following', // Path to populate following
+        select: 'name profileImg', // Fields to include from the populated following documents
+      },
+    ])
+
   return traveler
 }
 

@@ -66,10 +66,36 @@ const deleteTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         data: traveler,
     });
 }));
+const followTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currUser = req.user;
+    const traveler = yield traveler_service_1.travelerServices.followTraveler(req.params.id, currUser);
+    if (!traveler) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'The traveler you are trying to follow does not exist.');
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'You have successfully followed the traveler.', // Updated success message
+        data: traveler,
+    });
+}));
+const unfollowTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currUser = req.user;
+    const traveler = yield traveler_service_1.travelerServices.unfollowTraveler(req.params.id, currUser);
+    if (!traveler) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'The traveler you are trying to unfollow does not exist.');
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'You have successfully unfollowed the traveler.', // Updated success message
+        data: traveler,
+    });
+}));
 exports.travelerController = {
     // Change export name to travelerController
     getAllTravelers, // Change to getAllTravelers
     getTravelerById, // Change to getTravelerById
     updateTravelerById, // Change to updateTravelerById
     deleteTravelerById, // Change to deleteTravelerById
+    followTravelerById,
+    unfollowTravelerById,
 };

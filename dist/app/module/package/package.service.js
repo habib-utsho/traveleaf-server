@@ -17,6 +17,7 @@ const http_status_codes_1 = require("http-status-codes");
 const package_model_1 = __importDefault(require("./package.model"));
 const appError_1 = __importDefault(require("../../errors/appError"));
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const package_constant_1 = require("./package.constant");
 const insertPackage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     let updatedPayload = Object.assign({}, payload);
     if ((payload === null || payload === void 0 ? void 0 : payload.name) === 'Basic') {
@@ -33,7 +34,7 @@ const insertPackage = (payload) => __awaiter(void 0, void 0, void 0, function* (
 });
 const getAllPackages = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const packageQuery = new QueryBuilder_1.default(package_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort}` }))
-        .searchQuery([])
+        .searchQuery(package_constant_1.packageSearchableFields)
         .filterQuery()
         .sortQuery()
         .paginateQuery()

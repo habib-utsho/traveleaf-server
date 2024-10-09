@@ -21,3 +21,5 @@ router.patch('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_c
     next();
 }, (0, zodValidateHandler_1.default)(traveler_validation_1.updateTravelerZodSchema), traveler_controller_1.travelerController.updateTravelerById);
 router.delete('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), traveler_controller_1.travelerController.deleteTravelerById);
+router.patch('/follow-traveler/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.TRAVELER), traveler_controller_1.travelerController.followTravelerById);
+router.patch('/unfollow-traveler/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.TRAVELER), traveler_controller_1.travelerController.unfollowTravelerById);
