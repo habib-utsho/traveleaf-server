@@ -1,4 +1,4 @@
-# Car Wash Booking System
+# TraveLeaf
 
 Welcome to **TraveLeaf**! A travel-related blog site where you can share your travel experiences and destination guides. This application is built using **Express.js**, **MongoDB**, **Mongoose**, and **TypeScript**.
 
@@ -86,5 +86,5 @@ Running the Server by- **yarn dev**
 
 Local Base URL: **[Link](http://localhost:5500/api/v1)**
 
-Production Base URL: **[Link](https://.onrender.com/api/v1)**
+Production Base URL: **[Link](https://traveleaf-server.onrender.com/api/v1)**
 ```

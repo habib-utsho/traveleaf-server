@@ -13,16 +13,21 @@ import cron from 'node-cron'
 
 const app = express()
 
+// Create an axios instance with a longer timeout
 const axiosInstance = axios.create({
-  timeout: 10000, // 10 seconds timeout
+  timeout: 30000, // 30 seconds timeout
 })
-cron.schedule('*/20 * * * *', () => {
+
+// Schedule the self-ping every 10 minutes (you can adjust the frequency)
+cron.schedule('*/10 * * * *', () => {
   axiosInstance
     .get(`https://traveleaf-server.onrender.com`)
-    .then((response) =>
-      console.log('😀🎉 Self-ping successful:', response.status),
-    )
-    .catch((error) => console.error('😡 Self-ping failed:', error.message))
+    .then((response) => {
+      console.log('😀🎉 Self-ping successful:', response.status)
+    })
+    .catch((error) => {
+      console.error('😡 Self-ping failed:', error.message)
+    })
 })
 
 app.get('/', async (req, res) => {
