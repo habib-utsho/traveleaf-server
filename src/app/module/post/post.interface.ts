@@ -1,17 +1,17 @@
-import { ObjectId } from 'mongoose'
+import { Types } from "mongoose"
+
 
 type TPost = {
   title: string
   banner: string
   content: string
-  author: ObjectId
+  author: Types.ObjectId
   authorType: 'Traveler' | 'Admin'
-  category: ObjectId
+  category: Types.ObjectId
   isPremium: boolean
-  upvotes: number
-  downvotes: number
-  upvotedBy: ObjectId[]
-  downvotedBy: ObjectId[]
+  votes: number
+  upvotedBy: Types.ObjectId[]
+  downvotedBy: Types.ObjectId[]
   isDeleted: boolean
 }
 

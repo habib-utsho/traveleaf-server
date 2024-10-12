@@ -17,12 +17,17 @@ const http_status_codes_1 = require("http-status-codes");
 const comment_model_1 = __importDefault(require("./comment.model"));
 const appError_1 = __importDefault(require("../../errors/appError"));
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const traveler_model_1 = __importDefault(require("../traveler/traveler.model"));
 const insertComment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExistUser = yield traveler_model_1.default.findById(payload.user);
+    if (!isExistUser) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'User not found!');
+    }
     const comment = yield comment_model_1.default.create(payload);
     return comment;
 });
 const getAllComments = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const commentQuery = new QueryBuilder_1.default(comment_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort}` }))
+    const commentQuery = new QueryBuilder_1.default(comment_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort} -createdAt` }))
         .searchQuery([])
         .filterQuery()
         .sortQuery()

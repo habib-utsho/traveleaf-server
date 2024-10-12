@@ -31,3 +31,7 @@ router.patch('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_c
 }, (0, zodValidateHandler_1.default)(post_validation_1.updatePostZodSchema), post_controller_1.postController.updatePostById);
 // Delete a post by ID
 router.delete('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.TRAVELER), post_controller_1.postController.deletePostById);
+// Upvote a post by ID
+router.patch('/upvote/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.TRAVELER), post_controller_1.postController.upvotePostById);
+// Downvote a post by ID
+router.patch('/downvote/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.TRAVELER), post_controller_1.postController.downvotePostById);

@@ -29,11 +29,16 @@ const insertComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 }));
 // Get all comments
 const getAllComments = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const comments = yield comment_service_1.commentServices.getAllComments(req.query);
+    var _a, _b;
+    const { data, total } = yield comment_service_1.commentServices.getAllComments(req.query); // Change to getAllTravelers
+    const page = ((_a = req.query) === null || _a === void 0 ? void 0 : _a.page) ? Number(req.query.page) : 1;
+    const limit = ((_b = req.query) === null || _b === void 0 ? void 0 : _b.limit) ? Number(req.query.limit) : 10;
+    const totalPage = Math.ceil(total / limit);
     (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
         success: true,
-        message: 'Comments retrieved successfully!',
-        data: comments,
+        message: 'Comments retrieved successfully!', // Update message
+        data,
+        meta: { total, page, totalPage, limit },
     });
 }));
 // Get a single comment by ID

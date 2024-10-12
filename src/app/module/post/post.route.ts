@@ -43,4 +43,11 @@ router.patch(
 // Delete a post by ID
 router.delete('/:id', auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER), postController.deletePostById)
 
+// Upvote a post by ID
+router.patch('/upvote/:id', auth(USER_ROLE.TRAVELER), postController.upvotePostById)
+
+
+// Downvote a post by ID
+router.patch('/downvote/:id', auth(USER_ROLE.TRAVELER), postController.downvotePostById)
+
 export { router as postRouter }

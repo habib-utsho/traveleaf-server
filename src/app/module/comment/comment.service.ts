@@ -3,8 +3,13 @@ import { TComment } from './comment.interface'
 import Comment from './comment.model'
 import AppError from '../../errors/appError'
 import QueryBuilder from '../../builder/QueryBuilder'
+import Traveler from '../traveler/traveler.model'
 
 const insertComment = async (payload: TComment) => {
+  const isExistUser = await Traveler.findById(payload.user)
+  if(!isExistUser){
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found!')
+  } 
   const comment = await Comment.create(payload)
 
   return comment
@@ -13,7 +18,7 @@ const insertComment = async (payload: TComment) => {
 const getAllComments = async (query: Record<string, unknown>) => {
   const commentQuery = new QueryBuilder(Comment.find(), {
     ...query,
-    sort: `${query.sort}`,
+    sort: `${query.sort} -createdAt`,
   })
     .searchQuery([])
     .filterQuery()

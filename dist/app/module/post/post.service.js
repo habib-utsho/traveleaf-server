@@ -159,6 +159,80 @@ const deletePostById = (id, user) => __awaiter(void 0, void 0, void 0, function*
     }
     return post;
 });
+const upvotePostById = (postId, currUser) => __awaiter(void 0, void 0, void 0, function* () {
+    const postToUpvote = yield post_model_1.default.findById(postId);
+    const currentUserTraveler = yield traveler_model_1.default.findOne({
+        user: currUser === null || currUser === void 0 ? void 0 : currUser._id,
+    });
+    if (!postToUpvote) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Post not found!');
+    }
+    if (!currentUserTraveler) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, `You're not a traveler!`);
+    }
+    // Check if already upvoted
+    const upvoteIndex = postToUpvote.upvotedBy.indexOf(currentUserTraveler._id);
+    if (upvoteIndex !== -1) {
+        // User is toggling their upvote off
+        postToUpvote.upvotedBy.splice(upvoteIndex, 1); // Remove from upvotedBy
+        postToUpvote.votes -= 1; // Decrement the votes
+    }
+    else {
+        // New upvote or switch from downvote
+        const downvoteIndex = postToUpvote.downvotedBy.indexOf(currentUserTraveler._id);
+        if (downvoteIndex !== -1) {
+            // User is switching from downvote to upvote
+            postToUpvote.downvotedBy.splice(downvoteIndex, 1); // Remove from downvotedBy
+            postToUpvote.votes += 2; // Switch from -1 to +1
+        }
+        else {
+            // New upvote
+            postToUpvote.votes += 1; // Increment for upvote
+        }
+        // Add current user's ID to the post's upvotedBy array
+        postToUpvote.upvotedBy.push(currentUserTraveler._id);
+    }
+    // Save the post
+    yield postToUpvote.save();
+    return postToUpvote; // Return the updated post
+});
+const downvotePostById = (postId, currUser) => __awaiter(void 0, void 0, void 0, function* () {
+    const postToDownvote = yield post_model_1.default.findById(postId);
+    const currentUserTraveler = yield traveler_model_1.default.findOne({
+        user: currUser === null || currUser === void 0 ? void 0 : currUser._id,
+    });
+    if (!postToDownvote) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Post not found!');
+    }
+    if (!currentUserTraveler) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, `You're not a traveler!`);
+    }
+    // Check if already downvoted
+    const downvoteIndex = postToDownvote.downvotedBy.indexOf(currentUserTraveler._id);
+    if (downvoteIndex !== -1) {
+        // User is toggling their downvote off
+        postToDownvote.downvotedBy.splice(downvoteIndex, 1); // Remove from downvotedBy
+        postToDownvote.votes += 1; // Increment the votes
+    }
+    else {
+        // New downvote or switch from upvote
+        const upvoteIndex = postToDownvote.upvotedBy.indexOf(currentUserTraveler._id);
+        if (upvoteIndex !== -1) {
+            // User is switching from upvote to downvote
+            postToDownvote.upvotedBy.splice(upvoteIndex, 1); // Remove from upvotedBy
+            postToDownvote.votes -= 2; // Switch from +1 to -1
+        }
+        else {
+            // New downvote
+            postToDownvote.votes -= 1; // Decrement for downvote
+        }
+        // Add current user's ID to the post's downvotedBy array
+        postToDownvote.downvotedBy.push(currentUserTraveler._id);
+    }
+    // Save the post
+    yield postToDownvote.save();
+    return postToDownvote; // Return the updated post
+});
 // Exporting the post services
 exports.postServices = {
     insertPost,
@@ -166,4 +240,6 @@ exports.postServices = {
     getPostById,
     updatePostById,
     deletePostById,
+    upvotePostById,
+    downvotePostById
 };
