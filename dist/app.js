@@ -21,14 +21,20 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const axios_1 = __importDefault(require("axios"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const app = (0, express_1.default)();
+// Create an axios instance with a longer timeout
 const axiosInstance = axios_1.default.create({
-    timeout: 10000, // 10 seconds timeout
+    timeout: 30000, // 30 seconds timeout
 });
-node_cron_1.default.schedule('*/20 * * * *', () => {
+// Schedule the self-ping every 10 minutes (you can adjust the frequency)
+node_cron_1.default.schedule('*/10 * * * *', () => {
     axiosInstance
         .get(`https://traveleaf-server.onrender.com`)
-        .then((response) => console.log('😀🎉 Self-ping successful:', response.status))
-        .catch((error) => console.error('😡 Self-ping failed:', error.message));
+        .then((response) => {
+        console.log('😀🎉 Self-ping successful:', response.status);
+    })
+        .catch((error) => {
+        console.error('😡 Self-ping failed:', error.message);
+    });
 });
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send('TraveLeaf home route!');
