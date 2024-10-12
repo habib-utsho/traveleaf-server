@@ -73,6 +73,7 @@ const insertSubscription = async (payload: TSubscription) => {
     } else {
       throw new AppError(StatusCodes.BAD_REQUEST, 'Payment failed')
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new AppError(
       StatusCodes.INTERNAL_SERVER_ERROR,

@@ -58,6 +58,7 @@ const insertSubscription = (payload) => __awaiter(void 0, void 0, void 0, functi
         else {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Payment failed');
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }
     catch (error) {
         throw new appError_1.default(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR, error.message || 'An error occurred during the payment process');
