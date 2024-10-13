@@ -42,12 +42,12 @@ const insertPost = (file, user, payload) => __awaiter(void 0, void 0, void 0, fu
             throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Author not found!');
         }
         // const existUser = await User.findById(existAuthor.user)
-        const isAlreadyExistUpvote = yield post_model_1.default.findOne({
-            author: existAuthor._id,
-            upvotes: { $gt: 0 },
-        });
-        if (payload.isPremium === true &&
-            (!isAlreadyExistUpvote || (existAuthorUser === null || existAuthorUser === void 0 ? void 0 : existAuthorUser.status) !== 'premium')) {
+        // const isAlreadyExistUpvote = await Post.findOne({
+        //   author: existAuthor._id,
+        //   upvotes: { $gt: 0 },
+        // })
+        if (payload.isPremium === true && existAuthorUser.role === 'traveler' &&
+            (existAuthorUser === null || existAuthorUser === void 0 ? void 0 : existAuthorUser.status) !== 'premium') {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'User must be premium and have at least one upvote to create a premium post!');
         }
         // file upload

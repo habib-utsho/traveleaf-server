@@ -26,7 +26,7 @@ router.get('/:id', commentController.getCommentById)
 // Update a comment by ID
 router.patch(
   '/:id',
-  auth(USER_ROLE.ADMIN),
+  auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER),
   zodValidateHandler(updateCommentZodSchema),
   commentController.updateCommentById,
 )
@@ -34,7 +34,7 @@ router.patch(
 // Delete a comment by ID
 router.delete(
   '/:id',
-  auth(USER_ROLE.ADMIN),
+  auth(USER_ROLE.ADMIN, USER_ROLE.TRAVELER),
   commentController.deleteCommentById,
 )
 

@@ -19,6 +19,6 @@ router.get('/', comment_controller_1.commentController.getAllComments);
 // Get a single comment by ID
 router.get('/:id', comment_controller_1.commentController.getCommentById);
 // Update a comment by ID
-router.patch('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), (0, zodValidateHandler_1.default)(comment_validation_1.updateCommentZodSchema), comment_controller_1.commentController.updateCommentById);
+router.patch('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.TRAVELER), (0, zodValidateHandler_1.default)(comment_validation_1.updateCommentZodSchema), comment_controller_1.commentController.updateCommentById);
 // Delete a comment by ID
-router.delete('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN), comment_controller_1.commentController.deleteCommentById);
+router.delete('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.ADMIN, user_constant_1.USER_ROLE.TRAVELER), comment_controller_1.commentController.deleteCommentById);

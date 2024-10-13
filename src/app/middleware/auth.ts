@@ -74,6 +74,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
         profileImg: traveler?.profileImg,
         name: traveler?.name,
         phone: traveler?.phone,
+        status: traveler?.status,
       }
     }
     req.user = updatedDecoded as JwtPayload

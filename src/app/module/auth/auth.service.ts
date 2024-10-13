@@ -51,6 +51,7 @@ const login = async (payload: TLoginUser) => {
         profileImg: traveler.profileImg,
         name: traveler.name,
         phone: traveler.phone,
+        status: traveler?.status,
       }
     }
   }
@@ -122,8 +123,42 @@ const refreshToken = async (token: string) => {
     throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted!')
   }
 
-  const jwtPayload = { _id: user?._id, email: user.email, role: user.role }
+  let jwtPayload: JwtPayload | null = null
 
+  if (user.role === 'admin') {
+    const admin = await Admin.findOne({ user: user._id })
+    if (admin) {
+      jwtPayload = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        user: admin._id,
+        profileImg: admin.profileImg,
+        name: admin.name,
+        phone: admin.phone,
+      }
+    }
+  } else if (user.role === 'traveler') {
+    const traveler = await Traveler.findOne({ user: user._id })
+    if (traveler) {
+      jwtPayload = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        user: traveler._id,
+        profileImg: traveler.profileImg,
+        name: traveler.name,
+        phone: traveler.phone,
+        status: traveler?.status,
+      }
+    }
+  }
+  if (!jwtPayload) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Unable to create token payload.',
+    )
+  }
   const accessToken = jwt.sign(
     jwtPayload,
     process.env.JWT_ACCESS_SECRET as string,

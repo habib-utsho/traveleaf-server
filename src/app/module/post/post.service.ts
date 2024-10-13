@@ -34,14 +34,14 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
     }
     // const existUser = await User.findById(existAuthor.user)
 
-    const isAlreadyExistUpvote = await Post.findOne({
-      author: existAuthor._id,
-      upvotes: { $gt: 0 },
-    })
+    // const isAlreadyExistUpvote = await Post.findOne({
+    //   author: existAuthor._id,
+    //   upvotes: { $gt: 0 },
+    // })
 
     if (
-      payload.isPremium === true &&
-      (!isAlreadyExistUpvote || existAuthorUser?.status !== 'premium')
+      payload.isPremium === true && existAuthorUser.role === 'traveler' &&
+       existAuthorUser?.status !== 'premium'
     ) {
       throw new AppError(
         StatusCodes.BAD_REQUEST,
