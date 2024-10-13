@@ -87,7 +87,7 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
 const getAllPosts = async (query: Record<string, unknown>) => {
   const postQuery = new QueryBuilder(Post.find(), {
     ...query,
-    sort: `${query.sort} -createdAt`,
+    sort: `${query.sort} -votes`,
   })
     .searchQuery(postSearchableField)
     .filterQuery()
@@ -95,7 +95,7 @@ const getAllPosts = async (query: Record<string, unknown>) => {
     .paginateQuery()
     .fieldFilteringQuery()
     .populateQuery([
-      { path: 'author', select: '-createdAt -updatedAt -__v' },
+      { path: 'author', select: '-createdAt -updatedAt -__v', populate: { path: 'user', select: '-createdAt -updatedAt -__v' } },
       { path: 'category', select: '-createdAt -updatedAt -__v' },
       { path: 'upvotedBy', select: '-createdAt -updatedAt -__v' },
       { path: 'downvotedBy', select: '-createdAt -updatedAt -__v' },

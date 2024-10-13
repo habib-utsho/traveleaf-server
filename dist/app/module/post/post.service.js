@@ -73,14 +73,14 @@ const insertPost = (file, user, payload) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 const getAllPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const postQuery = new QueryBuilder_1.default(post_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort} -createdAt` }))
+    const postQuery = new QueryBuilder_1.default(post_model_1.default.find(), Object.assign(Object.assign({}, query), { sort: `${query.sort} -votes` }))
         .searchQuery(post_constant_1.postSearchableField)
         .filterQuery()
         .sortQuery()
         .paginateQuery()
         .fieldFilteringQuery()
         .populateQuery([
-        { path: 'author', select: '-createdAt -updatedAt -__v' },
+        { path: 'author', select: '-createdAt -updatedAt -__v', populate: { path: 'user', select: '-createdAt -updatedAt -__v' } },
         { path: 'category', select: '-createdAt -updatedAt -__v' },
         { path: 'upvotedBy', select: '-createdAt -updatedAt -__v' },
         { path: 'downvotedBy', select: '-createdAt -updatedAt -__v' },
