@@ -87,7 +87,8 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
 const getAllPosts = async (query: Record<string, unknown>) => {
   const postQuery = new QueryBuilder(Post.find(), {
     ...query,
-    sort: `${query.sort} -votes`,
+    // sort: `${query.sort} -votes`,
+    sort: `${query.sort}`,
   })
     .searchQuery(postSearchableField)
     .filterQuery()
