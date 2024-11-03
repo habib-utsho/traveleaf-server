@@ -8,7 +8,7 @@ const insertSubscription: RequestHandler = catchAsync(async (req, res) => {
   const subscription = await subscriptionServices.insertSubscription(req.body)
   sendResponse(res, StatusCodes.CREATED, {
     success: true,
-    message: 'Subscription created successfully!',
+    message: 'Subscribed successfully!',
     data: subscription,
   })
 })

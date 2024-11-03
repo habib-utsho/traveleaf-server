@@ -18,11 +18,17 @@ const insertComment: RequestHandler = catchAsync(async (req, res) => {
 
 // Get all comments
 const getAllComments: RequestHandler = catchAsync(async (req, res) => {
-  const comments = await commentServices.getAllComments(req.query)
+  const { data, total } = await commentServices.getAllComments(req.query) // Change to getAllTravelers
+
+  const page = req.query?.page ? Number(req.query.page) : 1
+  const limit = req.query?.limit ? Number(req.query.limit) : 10
+  const totalPage = Math.ceil(total / limit)
+
   sendResponse(res, StatusCodes.OK, {
     success: true,
-    message: 'Comments retrieved successfully!',
-    data: comments,
+    message: 'Comments retrieved successfully!', // Update message
+    data,
+    meta: { total, page, totalPage, limit },
   })
 })
 

@@ -82,10 +82,42 @@ const deletePostById: RequestHandler = catchAsync(async (req, res) => {
   })
 })
 
+// Upvote a post by ID
+const upvotePostById: RequestHandler = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const post = await postServices.upvotePostById(req.params?.id, currUser)
+  if (!post) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!')
+  }
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'Upvoted successfully!',
+    data: post,
+  })
+})
+
+// Upvote a post by ID
+const downvotePostById: RequestHandler = catchAsync(async (req, res) => {
+  const currUser = req.user as JwtPayload
+
+  const post = await postServices.downvotePostById(req.params?.id, currUser)
+  if (!post) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!')
+  }
+  sendResponse(res, StatusCodes.OK, {
+    success: true,
+    message: 'Downvoted successfully!',
+    data: post,
+  })
+})
+
 export const postController = {
   insertPost,
   getAllPosts,
   getPostById,
   updatePostById,
   deletePostById,
+  upvotePostById,
+  downvotePostById
 }

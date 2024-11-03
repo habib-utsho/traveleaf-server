@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import { TPost } from './post.interface'
 
 // Post Schema definition
@@ -17,7 +17,7 @@ const PostSchema = new Schema<TPost>(
       required: [true, 'Content is required'],
     },
     author: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
       refPath: 'authorType', // Dynamically set ref based on authorType
     },
@@ -26,7 +26,7 @@ const PostSchema = new Schema<TPost>(
       enum: ['Traveler', 'Admin'], // Allow only specific types
     },
     category: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Category',
       required: [true, 'Category is required'],
     },
@@ -34,23 +34,19 @@ const PostSchema = new Schema<TPost>(
       type: Boolean,
       default: false,
     },
-    upvotes: {
-      type: Number,
-      default: 0,
-    },
-    downvotes: {
+    votes: {
       type: Number,
       default: 0,
     },
     upvotedBy: [
       {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Traveler',
       },
     ],
     downvotedBy: [
       {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Traveler',
       },
     ],

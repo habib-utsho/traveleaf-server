@@ -60,7 +60,7 @@ const auth = (...requiredRoles) => {
         }
         if (decoded.role === 'traveler') {
             const traveler = yield traveler_model_1.default.findOne({ user: _id });
-            updatedDecoded = Object.assign(Object.assign({}, decoded), { user: traveler === null || traveler === void 0 ? void 0 : traveler._id, profileImg: traveler === null || traveler === void 0 ? void 0 : traveler.profileImg, name: traveler === null || traveler === void 0 ? void 0 : traveler.name, phone: traveler === null || traveler === void 0 ? void 0 : traveler.phone });
+            updatedDecoded = Object.assign(Object.assign({}, decoded), { user: traveler === null || traveler === void 0 ? void 0 : traveler._id, profileImg: traveler === null || traveler === void 0 ? void 0 : traveler.profileImg, name: traveler === null || traveler === void 0 ? void 0 : traveler.name, phone: traveler === null || traveler === void 0 ? void 0 : traveler.phone, status: traveler === null || traveler === void 0 ? void 0 : traveler.status });
         }
         req.user = updatedDecoded;
         next();

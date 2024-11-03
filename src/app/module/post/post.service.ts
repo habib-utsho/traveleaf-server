@@ -34,14 +34,14 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
     }
     // const existUser = await User.findById(existAuthor.user)
 
-    const isAlreadyExistUpvote = await Post.findOne({
-      author: existAuthor._id,
-      upvotes: { $gt: 0 },
-    })
+    // const isAlreadyExistUpvote = await Post.findOne({
+    //   author: existAuthor._id,
+    //   upvotes: { $gt: 0 },
+    // })
 
     if (
-      payload.isPremium === true &&
-      (!isAlreadyExistUpvote || existAuthorUser?.status !== 'premium')
+      payload.isPremium === true && existAuthorUser.role === 'traveler' &&
+       existAuthorUser?.status !== 'premium'
     ) {
       throw new AppError(
         StatusCodes.BAD_REQUEST,
@@ -87,7 +87,8 @@ const insertPost = async (file: any, user: JwtPayload, payload: TPost) => {
 const getAllPosts = async (query: Record<string, unknown>) => {
   const postQuery = new QueryBuilder(Post.find(), {
     ...query,
-    sort: `${query.sort} -createdAt`,
+    // sort: `${query.sort} -votes`,
+    sort: `${query.sort}`,
   })
     .searchQuery(postSearchableField)
     .filterQuery()
@@ -95,7 +96,7 @@ const getAllPosts = async (query: Record<string, unknown>) => {
     .paginateQuery()
     .fieldFilteringQuery()
     .populateQuery([
-      { path: 'author', select: '-createdAt -updatedAt -__v' },
+      { path: 'author', select: '-createdAt -updatedAt -__v', populate: { path: 'user', select: '-createdAt -updatedAt -__v' } },
       { path: 'category', select: '-createdAt -updatedAt -__v' },
       { path: 'upvotedBy', select: '-createdAt -updatedAt -__v' },
       { path: 'downvotedBy', select: '-createdAt -updatedAt -__v' },
@@ -204,11 +205,100 @@ const deletePostById = async (id: string, user: JwtPayload) => {
   return post
 }
 
+const upvotePostById = async (postId: string, currUser: JwtPayload) => {
+  const postToUpvote = await Post.findById(postId);
+  const currentUserTraveler = await Traveler.findOne({
+    user: currUser?._id,
+  });
+
+  if (!postToUpvote) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+  }
+
+  if (!currentUserTraveler) {
+    throw new AppError(StatusCodes.NOT_FOUND, `You're not a traveler!`);
+  }
+
+  // Check if already upvoted
+  const upvoteIndex = postToUpvote.upvotedBy.indexOf(currentUserTraveler._id);
+  if (upvoteIndex !== -1) {
+    // User is toggling their upvote off
+    postToUpvote.upvotedBy.splice(upvoteIndex, 1); // Remove from upvotedBy
+    postToUpvote.votes -= 1; // Decrement the votes
+  } else {
+    // New upvote or switch from downvote
+    const downvoteIndex = postToUpvote.downvotedBy.indexOf(currentUserTraveler._id);
+    if (downvoteIndex !== -1) {
+      // User is switching from downvote to upvote
+      postToUpvote.downvotedBy.splice(downvoteIndex, 1); // Remove from downvotedBy
+      postToUpvote.votes += 2; // Switch from -1 to +1
+    } else {
+      // New upvote
+      postToUpvote.votes += 1; // Increment for upvote
+    }
+    // Add current user's ID to the post's upvotedBy array
+    postToUpvote.upvotedBy.push(currentUserTraveler._id);
+  }
+
+  // Save the post
+  await postToUpvote.save();
+
+  return postToUpvote; // Return the updated post
+};
+
+const downvotePostById = async (postId: string, currUser: JwtPayload) => {
+  const postToDownvote = await Post.findById(postId);
+  const currentUserTraveler = await Traveler.findOne({
+    user: currUser?._id,
+  });
+
+  if (!postToDownvote) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+  }
+
+  if (!currentUserTraveler) {
+    throw new AppError(StatusCodes.NOT_FOUND, `You're not a traveler!`);
+  }
+
+  // Check if already downvoted
+  const downvoteIndex = postToDownvote.downvotedBy.indexOf(currentUserTraveler._id);
+  if (downvoteIndex !== -1) {
+    // User is toggling their downvote off
+    postToDownvote.downvotedBy.splice(downvoteIndex, 1); // Remove from downvotedBy
+    postToDownvote.votes += 1; // Increment the votes
+  } else {
+    // New downvote or switch from upvote
+    const upvoteIndex = postToDownvote.upvotedBy.indexOf(currentUserTraveler._id);
+    if (upvoteIndex !== -1) {
+      // User is switching from upvote to downvote
+      postToDownvote.upvotedBy.splice(upvoteIndex, 1); // Remove from upvotedBy
+      postToDownvote.votes -= 2; // Switch from +1 to -1
+    } else {
+      // New downvote
+      postToDownvote.votes -= 1; // Decrement for downvote
+    }
+    // Add current user's ID to the post's downvotedBy array
+    postToDownvote.downvotedBy.push(currentUserTraveler._id);
+  }
+
+  // Save the post
+  await postToDownvote.save();
+
+  return postToDownvote; // Return the updated post
+};
+
+
+
+
+
 // Exporting the post services
 export const postServices = {
+
   insertPost,
   getAllPosts,
   getPostById,
   updatePostById,
   deletePostById,
+  upvotePostById,
+  downvotePostById
 }

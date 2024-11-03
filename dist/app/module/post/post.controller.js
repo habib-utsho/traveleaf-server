@@ -83,10 +83,40 @@ const deletePostById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: post,
     });
 }));
+// Upvote a post by ID
+const upvotePostById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const currUser = req.user;
+    const post = yield post_service_1.postServices.upvotePostById((_a = req.params) === null || _a === void 0 ? void 0 : _a.id, currUser);
+    if (!post) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Post not found!');
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'Upvoted successfully!',
+        data: post,
+    });
+}));
+// Upvote a post by ID
+const downvotePostById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const currUser = req.user;
+    const post = yield post_service_1.postServices.downvotePostById((_a = req.params) === null || _a === void 0 ? void 0 : _a.id, currUser);
+    if (!post) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Post not found!');
+    }
+    (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.OK, {
+        success: true,
+        message: 'Downvoted successfully!',
+        data: post,
+    });
+}));
 exports.postController = {
     insertPost,
     getAllPosts,
     getPostById,
     updatePostById,
     deletePostById,
+    upvotePostById,
+    downvotePostById
 };

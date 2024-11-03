@@ -16,7 +16,7 @@ const PostSchema = new mongoose_1.Schema({
         required: [true, 'Content is required'],
     },
     author: {
-        type: mongoose_1.Types.ObjectId,
+        type: mongoose_1.Schema.Types.ObjectId,
         required: true,
         refPath: 'authorType', // Dynamically set ref based on authorType
     },
@@ -25,7 +25,7 @@ const PostSchema = new mongoose_1.Schema({
         enum: ['Traveler', 'Admin'], // Allow only specific types
     },
     category: {
-        type: mongoose_1.Types.ObjectId,
+        type: mongoose_1.Schema.Types.ObjectId,
         ref: 'Category',
         required: [true, 'Category is required'],
     },
@@ -33,23 +33,19 @@ const PostSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
-    upvotes: {
-        type: Number,
-        default: 0,
-    },
-    downvotes: {
+    votes: {
         type: Number,
         default: 0,
     },
     upvotedBy: [
         {
-            type: mongoose_1.Types.ObjectId,
+            type: mongoose_1.Schema.Types.ObjectId,
             ref: 'Traveler',
         },
     ],
     downvotedBy: [
         {
-            type: mongoose_1.Types.ObjectId,
+            type: mongoose_1.Schema.Types.ObjectId,
             ref: 'Traveler',
         },
     ],

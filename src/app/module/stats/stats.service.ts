@@ -27,25 +27,29 @@ const getAdminStats = async () => {
   }
 }
 const getUserStats = async (existUser: JwtPayload) => {
-  const traveler = await Traveler.findOne({ user: existUser?.id })
+  const traveler = await Traveler.findOne({ user: existUser?._id })
 
-  if (traveler?.user != existUser?.id) {
+  if (traveler?.user != existUser?._id) {
     throw new AppError(
       StatusCodes.UNAUTHORIZED,
       'You are not authorized to view this page',
     )
   }
-  const totalSubscription = await Subscription.find({}).countDocuments()
+  const currentSubscription = await Subscription.findOne({user: traveler?._id, endDate: { $gte: new Date() }}).populate('package').populate('user')
   const totalPost = await Post.find({ author: traveler?._id }).countDocuments()
+  const totalFollowers = traveler?.followers?.length
+  const totalFollowing = traveler?.following?.length
   const totalPremiumPost = await Post.find({
     author: traveler?._id,
     isPremium: true,
   }).countDocuments()
 
   return {
-    totalSubscription,
+    currentSubscription,
     totalPost,
     totalPremiumPost,
+    totalFollowers,
+    totalFollowing
   }
 }
 

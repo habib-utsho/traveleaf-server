@@ -59,6 +59,7 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
                 profileImg: traveler.profileImg,
                 name: traveler.name,
                 phone: traveler.phone,
+                status: traveler === null || traveler === void 0 ? void 0 : traveler.status,
             };
         }
     }
@@ -105,7 +106,39 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     if (user.isBlocked) {
         throw new appError_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, 'This user is deleted!');
     }
-    const jwtPayload = { _id: user === null || user === void 0 ? void 0 : user._id, email: user.email, role: user.role };
+    let jwtPayload = null;
+    if (user.role === 'admin') {
+        const admin = yield admin_model_1.default.findOne({ user: user._id });
+        if (admin) {
+            jwtPayload = {
+                _id: user._id,
+                email: user.email,
+                role: user.role,
+                user: admin._id,
+                profileImg: admin.profileImg,
+                name: admin.name,
+                phone: admin.phone,
+            };
+        }
+    }
+    else if (user.role === 'traveler') {
+        const traveler = yield traveler_model_1.default.findOne({ user: user._id });
+        if (traveler) {
+            jwtPayload = {
+                _id: user._id,
+                email: user.email,
+                role: user.role,
+                user: traveler._id,
+                profileImg: traveler.profileImg,
+                name: traveler.name,
+                phone: traveler.phone,
+                status: traveler === null || traveler === void 0 ? void 0 : traveler.status,
+            };
+        }
+    }
+    if (!jwtPayload) {
+        throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Unable to create token payload.');
+    }
     const accessToken = jsonwebtoken_1.default.sign(jwtPayload, process.env.JWT_ACCESS_SECRET, {
         expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
     });

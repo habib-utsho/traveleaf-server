@@ -21,7 +21,7 @@ const insertSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
     const subscription = yield subscription_service_1.subscriptionServices.insertSubscription(req.body);
     (0, sendResponse_1.default)(res, http_status_codes_1.StatusCodes.CREATED, {
         success: true,
-        message: 'Subscription created successfully!',
+        message: 'Subscribed successfully!',
         data: subscription,
     });
 }));
