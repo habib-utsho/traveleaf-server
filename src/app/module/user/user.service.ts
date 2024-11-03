@@ -16,7 +16,6 @@ const insertTraveler = async (
   payload: TTraveler & Partial<TUser>,
 ) => {
   const session = await mongoose.startSession()
-
   try {
     session.startTransaction()
 
