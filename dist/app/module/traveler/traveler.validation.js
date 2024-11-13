@@ -7,7 +7,7 @@ const createTravelerZodSchema = zod_1.z.object({
     email: zod_1.z.string().email('Invalid email format.'),
     phone: zod_1.z
         .string()
-        .min(10, 'Phone number must be at least 10 characters long.')
+        // .min(10, 'Phone number must be at least 10 characters long.')
         .regex(/^\d+$/, 'Phone number must contain only digits.'),
     bio: zod_1.z.string().min(1, 'Bio is required.'),
     gender: zod_1.z.enum(['Male', 'Female', 'Other'], {
@@ -91,7 +91,7 @@ const updateTravelerZodSchema = zod_1.z.object({
     name: zod_1.z.string().min(1, 'Name is required.').optional(),
     phone: zod_1.z
         .string()
-        .min(10, 'Phone number must be at least 10 characters long.')
+        // .min(10, 'Phone number must be at least 10 characters long.')
         .regex(/^\d+$/, 'Phone number must contain only digits.')
         .optional(),
     bio: zod_1.z.string().min(1, 'Bio is required.').optional(),
