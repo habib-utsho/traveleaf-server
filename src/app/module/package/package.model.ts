@@ -6,8 +6,19 @@ const PackageSchema = new Schema<TPackage>(
     name: {
       type: String,
       required: true,
-      enum: ['Basic', 'Standard', 'Premium'], // List of available plans
+      enum: [
+        'Basic',
+        'Standard',
+        'Premium',
+        'Explorer',
+        'Backpacker',
+        'Adventurer',
+      ], // List of available plans
       unique: true,
+    },
+    shortBio: {
+      type: String,
+      required: true,
     },
     description: {
       type: String,
@@ -22,6 +33,10 @@ const PackageSchema = new Schema<TPackage>(
       required: true,
       default: 1, // Default to 1 month
       min: 1,
+    },
+    benefits: {
+      type: [String],
+      required: true,
     },
     currencyType: {
       type: String,

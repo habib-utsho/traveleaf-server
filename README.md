@@ -34,7 +34,7 @@ JWT_ACCESS_EXPIRES_IN=15d
 JWT_REFRESH_EXPIRES_IN=30d
 
 # Client
-CLIENT_URL=http://localhost:3000
+CLIENT_URL=https://traveleaf.vercel.app/
 
 # Default Admin
 ADMIN_DEFAULT_PASSWORD=1234@@aA
@@ -61,6 +61,9 @@ CLOUDINARY_URL=cloudinary://your_cloudinary_api_key:your_cloudinary_secret@your_
 - Node Mailer
 - ZOD
 - JWT
+- ESLint
+- Prettier
+
 
 ## Features
 

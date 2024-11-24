@@ -46,7 +46,8 @@ const insertPost = (file, user, payload) => __awaiter(void 0, void 0, void 0, fu
         //   author: existAuthor._id,
         //   upvotes: { $gt: 0 },
         // })
-        if (payload.isPremium === true && existAuthorUser.role === 'traveler' &&
+        if (payload.isPremium === true &&
+            existAuthorUser.role === 'traveler' &&
             (existAuthorUser === null || existAuthorUser === void 0 ? void 0 : existAuthorUser.status) !== 'premium') {
             throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'User must be premium and have at least one upvote to create a premium post!');
         }
@@ -82,7 +83,11 @@ const getAllPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
         .paginateQuery()
         .fieldFilteringQuery()
         .populateQuery([
-        { path: 'author', select: '-createdAt -updatedAt -__v', populate: { path: 'user', select: '-createdAt -updatedAt -__v' } },
+        {
+            path: 'author',
+            select: '-createdAt -updatedAt -__v',
+            populate: { path: 'user', select: '-createdAt -updatedAt -__v' },
+        },
         { path: 'category', select: '-createdAt -updatedAt -__v' },
         { path: 'upvotedBy', select: '-createdAt -updatedAt -__v' },
         { path: 'downvotedBy', select: '-createdAt -updatedAt -__v' },
@@ -243,5 +248,5 @@ exports.postServices = {
     updatePostById,
     deletePostById,
     upvotePostById,
-    downvotePostById
+    downvotePostById,
 };
