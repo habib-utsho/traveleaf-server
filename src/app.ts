@@ -18,6 +18,7 @@ const axiosInstance = axios.create({
   timeout: 30000, // 30 seconds timeout
 })
 
+
 // Schedule the self-ping every 10 minutes (you can adjust the frequency)
 cron.schedule('*/10 * * * *', () => {
   axiosInstance
