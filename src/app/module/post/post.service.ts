@@ -89,7 +89,7 @@ const getAllPosts = async (query: Record<string, unknown>) => {
   const postQuery = new QueryBuilder(Post.find(), {
     ...query,
     // sort: `${query.sort} -votes`,
-    sort: `${query.sort}`,
+    sort: `${query.sort} -createdAt`,
   })
     .searchQuery(postSearchableField)
     .filterQuery()

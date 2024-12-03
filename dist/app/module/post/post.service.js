@@ -76,7 +76,7 @@ const insertPost = (file, user, payload) => __awaiter(void 0, void 0, void 0, fu
 const getAllPosts = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const postQuery = new QueryBuilder_1.default(post_model_1.default.find(), Object.assign(Object.assign({}, query), { 
         // sort: `${query.sort} -votes`,
-        sort: `${query.sort}` }))
+        sort: `${query.sort} -createdAt` }))
         .searchQuery(post_constant_1.postSearchableField)
         .filterQuery()
         .sortQuery()
